@@ -1,0 +1,2180 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>PMFBY Crop Insurance Portfolio & Risk Analyzer</title>
+  <meta name="description" content="Actuarial Crop Risk Analyzer for assessing volatility, tail risk (VaR), and portfolio diversification under the PMFBY scheme using Monte Carlo simulations.">
+  
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+  
+  <!-- Plotly.js CDN for interactive charts -->
+  <script src="https://cdn.plot.ly/plotly-2.30.0.min.js"></script>
+
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 10% 20%, #061914 0%, #030d0a 100%);
+      --surface-bg: rgba(10, 31, 26, 0.85);
+      --surface-border: rgba(16, 185, 129, 0.15);
+      --surface-hover: rgba(16, 44, 37, 0.9);
+      --card-bg: rgba(12, 38, 31, 0.7);
+      
+      --text-primary: #f0fdf4;
+      --text-secondary: #a7f3d0;
+      --text-muted: #6ee7b7;
+      --text-dim: #059669;
+      
+      --brand-primary: #10b981;
+      --brand-accent: #34d399;
+      --brand-glow: rgba(16, 185, 129, 0.35);
+      --brand-gold: #f59e0b;
+      
+      --color-success: #10b981;
+      --color-warning: #f59e0b;
+      --color-danger: #ef4444;
+      --color-info: #0ea5e9;
+
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.3);
+      --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.45);
+      --shadow-lg: 0 20px 40px -10px rgba(0, 0, 0, 0.6);
+      --transition-base: all 0.25s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="light"] {
+      --bg-gradient: linear-gradient(135deg, #f0fdf4 0%, #e6f4ea 50%, #f4fbf7 100%);
+      --surface-bg: rgba(255, 255, 255, 0.95);
+      --surface-border: rgba(16, 185, 129, 0.25);
+      --surface-hover: rgba(240, 253, 244, 1);
+      --card-bg: rgba(255, 255, 255, 0.9);
+      
+      --text-primary: #064e3b;
+      --text-secondary: #047857;
+      --text-muted: #059669;
+      --text-dim: #10b981;
+      
+      --brand-primary: #059669;
+      --brand-accent: #10b981;
+      --brand-glow: rgba(5, 150, 105, 0.2);
+      --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-primary);
+      min-height: 100vh;
+      overflow-x: hidden;
+      line-height: 1.5;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* Presentation mode */
+    body.presentation-mode .sidebar {
+      display: none !important;
+    }
+    body.presentation-mode .main-content {
+      margin-left: 0 !important;
+      max-width: 1440px;
+      margin: 0 auto;
+    }
+    body.presentation-mode .top-nav {
+      padding: 10px 30px;
+    }
+
+    /* App Shell */
+    .app-container {
+      display: flex;
+      min-height: 100vh;
+    }
+
+    /* Sidebar controls */
+    .sidebar {
+      width: 330px;
+      background: var(--surface-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-right: 1px solid var(--surface-border);
+      padding: 24px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 22px;
+      flex-shrink: 0;
+      overflow-y: auto;
+      height: 100vh;
+      position: sticky;
+      top: 0;
+      z-index: 40;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .brand-box {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      padding-bottom: 16px;
+      border-bottom: 1px solid var(--surface-border);
+    }
+
+    .brand-icon {
+      font-size: 34px;
+      filter: drop-shadow(0 4px 8px var(--brand-glow));
+    }
+
+    .brand-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      line-height: 1.25;
+      color: var(--text-primary);
+      letter-spacing: -0.02em;
+    }
+
+    .brand-subtitle {
+      font-size: 0.72rem;
+      color: var(--brand-primary);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .control-group {
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+    }
+
+    .group-label {
+      font-family: 'Outfit', sans-serif;
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      color: var(--text-muted);
+      font-weight: 700;
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .control-card {
+      background: var(--card-bg);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-sm);
+      padding: 14px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      transition: var(--transition-base);
+    }
+
+    .control-card:hover {
+      border-color: var(--brand-primary);
+      background: var(--surface-hover);
+    }
+
+    .control-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      font-size: 0.85rem;
+      font-weight: 500;
+      color: var(--text-secondary);
+    }
+
+    .control-val {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      color: var(--brand-accent);
+    }
+
+    .range-slider {
+      width: 100%;
+      height: 6px;
+      border-radius: 3px;
+      background: rgba(255, 255, 255, 0.1);
+      outline: none;
+      -webkit-appearance: none;
+      cursor: pointer;
+    }
+
+    [data-theme="light"] .range-slider {
+      background: rgba(0, 0, 0, 0.1);
+    }
+
+    .range-slider::-webkit-slider-thumb {
+      -webkit-appearance: none;
+      appearance: none;
+      width: 16px;
+      height: 16px;
+      border-radius: 50%;
+      background: var(--brand-primary);
+      cursor: pointer;
+      box-shadow: 0 0 10px var(--brand-glow);
+      transition: transform 0.15s ease;
+    }
+
+    .range-slider::-webkit-slider-thumb:hover {
+      transform: scale(1.2);
+    }
+
+    .btn-group-row {
+      display: flex;
+      gap: 6px;
+    }
+
+    .btn-preset {
+      flex: 1;
+      padding: 6px 4px;
+      font-size: 0.75rem;
+      font-weight: 600;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--surface-border);
+      color: var(--text-secondary);
+      border-radius: 6px;
+      cursor: pointer;
+      transition: var(--transition-base);
+      text-align: center;
+    }
+
+    .btn-preset:hover, .btn-preset.active {
+      background: var(--brand-primary);
+      color: #fff;
+      border-color: var(--brand-primary);
+    }
+
+    /* File drop mini zone */
+    .file-drop-mini {
+      border: 1px dashed var(--surface-border);
+      border-radius: var(--radius-sm);
+      padding: 10px;
+      font-size: 0.8rem;
+      text-align: center;
+      cursor: pointer;
+      color: var(--text-muted);
+      transition: var(--transition-base);
+      background: rgba(0,0,0,0.1);
+    }
+    .file-drop-mini:hover {
+      border-color: var(--brand-primary);
+      color: var(--text-primary);
+    }
+    .file-drop-mini input[type="file"] {
+      display: none;
+    }
+    .file-status {
+      font-size: 0.72rem;
+      color: var(--brand-accent);
+      margin-top: 4px;
+      font-weight: 600;
+    }
+
+    /* Action Buttons */
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand-primary) 0%, #059669 100%);
+      color: #ffffff;
+      border: none;
+      padding: 12px 18px;
+      border-radius: var(--radius-sm);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      cursor: pointer;
+      box-shadow: 0 4px 14px var(--brand-glow);
+      transition: var(--transition-base);
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 6px 20px var(--brand-glow);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--surface-border);
+      color: var(--text-secondary);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      gap: 6px;
+      cursor: pointer;
+      transition: var(--transition-base);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+      border-color: var(--brand-primary);
+    }
+
+    /* Main Content Area */
+    .main-content {
+      flex: 1;
+      display: flex;
+      flex-direction: column;
+      overflow-y: auto;
+      max-height: 100vh;
+    }
+
+    /* Top Nav */
+    .top-nav {
+      height: 72px;
+      border-bottom: 1px solid var(--surface-border);
+      background: var(--surface-bg);
+      backdrop-filter: blur(12px);
+      -webkit-backdrop-filter: blur(12px);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      padding: 0 32px;
+      position: sticky;
+      top: 0;
+      z-index: 30;
+    }
+
+    .tabs-list {
+      display: flex;
+      gap: 8px;
+    }
+
+    .nav-tab {
+      padding: 8px 18px;
+      border-radius: 30px;
+      font-size: 0.88rem;
+      font-weight: 600;
+      color: var(--text-secondary);
+      background: transparent;
+      border: 1px solid transparent;
+      cursor: pointer;
+      transition: var(--transition-base);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .nav-tab:hover {
+      color: var(--text-primary);
+      background: rgba(255, 255, 255, 0.04);
+    }
+
+    .nav-tab.active {
+      background: rgba(16, 185, 129, 0.15);
+      border-color: var(--brand-primary);
+      color: var(--brand-accent);
+      box-shadow: 0 2px 8px var(--brand-glow);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--surface-border);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.1rem;
+      transition: var(--transition-base);
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.1);
+      color: var(--text-primary);
+      border-color: var(--brand-primary);
+    }
+
+    /* Page View Area */
+    .content-body {
+      padding: 32px;
+      display: flex;
+      flex-direction: column;
+      gap: 28px;
+    }
+
+    .tab-pane {
+      display: none;
+      flex-direction: column;
+      gap: 28px;
+      animation: fadeIn 0.3s ease;
+    }
+
+    .tab-pane.active {
+      display: flex;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(6px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    /* Hero / Header Section */
+    .view-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      border-bottom: 1px solid var(--surface-border);
+      padding-bottom: 18px;
+    }
+
+    .header-text h1 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.85rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 6px;
+    }
+
+    .header-text p {
+      color: var(--text-muted);
+      font-size: 0.95rem;
+      max-width: 800px;
+    }
+
+    /* Metric Cards Grid */
+    .metrics-grid {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+    }
+
+    @media (max-width: 1200px) {
+      .metrics-grid {
+        grid-template-columns: repeat(2, 1fr);
+      }
+    }
+
+    .metric-card {
+      background: var(--surface-bg);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+      transition: var(--transition-base);
+    }
+
+    .metric-card:hover {
+      transform: translateY(-2px);
+      box-shadow: var(--shadow-md);
+      border-color: var(--brand-primary);
+    }
+
+    .metric-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 4px;
+      height: 100%;
+      background: var(--brand-primary);
+    }
+
+    .metric-card.warning::before {
+      background: var(--brand-gold);
+    }
+
+    .metric-card.danger::before {
+      background: var(--color-danger);
+    }
+
+    .metric-card.info::before {
+      background: var(--color-info);
+    }
+
+    .metric-title {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      font-weight: 600;
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .metric-value {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.0rem;
+      font-weight: 800;
+      line-height: 1.1;
+      color: var(--text-primary);
+    }
+
+    .metric-sub {
+      font-size: 0.78rem;
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .badge-pill {
+      display: inline-flex;
+      align-items: center;
+      padding: 2px 8px;
+      border-radius: 12px;
+      font-size: 0.7rem;
+      font-weight: 700;
+      background: rgba(16, 185, 129, 0.15);
+      color: var(--brand-accent);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+    }
+
+    .badge-pill.warning {
+      background: rgba(245, 158, 11, 0.15);
+      color: var(--brand-gold);
+      border-color: rgba(245, 158, 11, 0.3);
+    }
+
+    .badge-pill.danger {
+      background: rgba(239, 68, 68, 0.15);
+      color: var(--color-danger);
+      border-color: rgba(239, 68, 68, 0.3);
+    }
+
+    /* Charts Layout Grid */
+    .charts-grid-2 {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 20px;
+    }
+
+    @media (max-width: 1024px) {
+      .charts-grid-2 {
+        grid-template-columns: 1fr;
+      }
+    }
+
+    .chart-panel {
+      background: var(--surface-bg);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 14px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .panel-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    .panel-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .panel-actions {
+      display: flex;
+      align-items: center;
+      gap: 8px;
+    }
+
+    .chart-container {
+      width: 100%;
+      height: 380px;
+      position: relative;
+    }
+
+    /* Data Tables */
+    .table-container {
+      background: var(--surface-bg);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      box-shadow: var(--shadow-sm);
+      overflow-x: auto;
+    }
+
+    .table-toolbar {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    .search-input {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--surface-border);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.85rem;
+      width: 240px;
+      outline: none;
+    }
+
+    .search-input:focus {
+      border-color: var(--brand-primary);
+    }
+
+    .styled-table {
+      width: 100%;
+      border-collapse: collapse;
+      font-size: 0.85rem;
+      text-align: left;
+    }
+
+    .styled-table th {
+      background: rgba(255, 255, 255, 0.03);
+      color: var(--text-muted);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      text-transform: uppercase;
+      font-size: 0.75rem;
+      letter-spacing: 0.05em;
+      padding: 12px 14px;
+      border-bottom: 2px solid var(--surface-border);
+      cursor: pointer;
+      user-select: none;
+    }
+
+    .styled-table th:hover {
+      color: var(--brand-accent);
+    }
+
+    .styled-table td {
+      padding: 12px 14px;
+      border-bottom: 1px solid var(--surface-border);
+      color: var(--text-secondary);
+      font-variant-numeric: tabular-nums;
+    }
+
+    .styled-table tr:hover td {
+      background: rgba(255, 255, 255, 0.02);
+      color: var(--text-primary);
+    }
+
+    /* Comparison Selector */
+    .compare-bar {
+      display: flex;
+      align-items: center;
+      gap: 20px;
+      background: var(--surface-bg);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      padding: 18px 24px;
+      box-shadow: var(--shadow-sm);
+    }
+
+    .select-custom {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--surface-border);
+      color: var(--text-primary);
+      padding: 8px 14px;
+      border-radius: var(--radius-sm);
+      font-size: 0.9rem;
+      outline: none;
+      cursor: pointer;
+    }
+
+    .select-custom option {
+      background: #061914;
+      color: #fff;
+    }
+
+    [data-theme="light"] .select-custom option {
+      background: #fff;
+      color: #064e3b;
+    }
+
+    /* Guide / Modal */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.7);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 20px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-card {
+      background: var(--surface-bg);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-lg);
+      width: 100%;
+      max-width: 800px;
+      max-height: 85vh;
+      overflow-y: auto;
+      padding: 32px;
+      box-shadow: var(--shadow-lg);
+      display: flex;
+      flex-direction: column;
+      gap: 20px;
+    }
+
+    .modal-header {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      border-bottom: 1px solid var(--surface-border);
+      padding-bottom: 14px;
+    }
+
+    .modal-header h2 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.4rem;
+    }
+
+    .close-btn {
+      background: none;
+      border: none;
+      color: var(--text-muted);
+      font-size: 1.5rem;
+      cursor: pointer;
+    }
+
+    .method-block {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-sm);
+      padding: 16px;
+      margin-bottom: 12px;
+    }
+
+    .method-block h4 {
+      color: var(--brand-accent);
+      margin-bottom: 6px;
+      font-family: 'Outfit', sans-serif;
+    }
+
+    .method-block p {
+      font-size: 0.88rem;
+      color: var(--text-secondary);
+      line-height: 1.6;
+    }
+
+    /* Footer */
+    .app-footer {
+      margin-top: auto;
+      border-top: 1px solid var(--surface-border);
+      padding: 20px 32px;
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+
+    /* Notification toast */
+    .toast-msg {
+      position: fixed;
+      bottom: 24px;
+      right: 24px;
+      background: var(--brand-primary);
+      color: white;
+      padding: 12px 20px;
+      border-radius: var(--radius-sm);
+      box-shadow: var(--shadow-lg);
+      font-weight: 600;
+      font-size: 0.9rem;
+      transform: translateY(100px);
+      opacity: 0;
+      transition: all 0.3s ease;
+      z-index: 999;
+    }
+    .toast-msg.show {
+      transform: translateY(0);
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+
+<div class="app-container">
+  <!-- SIDEBAR CONTROLS -->
+  <aside class="sidebar" id="sidebar">
+    <div class="brand-box">
+      <div class="brand-icon">🌾</div>
+      <div>
+        <div class="brand-title">Crop Risk Analyzer</div>
+        <div class="brand-subtitle">PMFBY Actuarial Engine</div>
+      </div>
+    </div>
+
+    <!-- Simulation Parameters -->
+    <div class="control-group">
+      <div class="group-label">⚙️ Monte Carlo Settings</div>
+      
+      <div class="control-card">
+        <div class="control-header">
+          <span>Number of Simulations</span>
+          <span class="control-val" id="valSims">1,000</span>
+        </div>
+        <input type="range" class="range-slider" id="sliderSims" min="100" max="5000" step="100" value="1000">
+        <div class="btn-group-row">
+          <button class="btn-preset active" data-sims="1000">1,000</button>
+          <button class="btn-preset" data-sims="2500">2,500</button>
+          <button class="btn-preset" data-sims="5000">5,000</button>
+        </div>
+      </div>
+
+      <div class="control-card">
+        <div class="control-header">
+          <span>Indemnity Level (%)</span>
+          <span class="control-val" id="valIndemnity">70%</span>
+        </div>
+        <input type="range" class="range-slider" id="sliderIndemnity" min="0" max="100" step="5" value="70">
+        <div style="font-size:0.72rem; color:var(--text-muted);" id="subIndemnity">
+          Indemnity factor = (1.0 - 70%) = 0.30 (Matches Streamlit default)
+        </div>
+        <div class="btn-group-row" style="margin-top:6px;">
+          <button class="btn-preset active" data-indemnity="70">70% (Streamlit)</button>
+          <button class="btn-preset" data-indemnity="10">10% (Factor 0.9)</button>
+          <button class="btn-preset" data-indemnity="20">20% (Factor 0.8)</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Data Management -->
+    <div class="control-group">
+      <div class="group-label">📂 Portfolio Datasets</div>
+      
+      <div class="control-card">
+        <div class="control-header">
+          <span>Yield Performance File</span>
+        </div>
+        <div class="file-drop-mini" id="dropYield" onclick="document.getElementById('fileYield').click()">
+          <span id="labelYield">📥 Upload Custom Yield CSV</span>
+          <input type="file" id="fileYield" accept=".csv">
+          <div class="file-status" id="statusYield">✓ Sample Data Loaded (300 IU Records)</div>
+        </div>
+      </div>
+
+      <div class="control-card">
+        <div class="control-header">
+          <span>Thresholds &amp; Terms File</span>
+        </div>
+        <div class="file-drop-mini" id="dropThresh" onclick="document.getElementById('fileThresh').click()">
+          <span id="labelThresh">📥 Upload Custom Thresholds CSV</span>
+          <input type="file" id="fileThresh" accept=".csv">
+          <div class="file-status" id="statusThresh">✓ Sample Terms Loaded (9 Contracts)</div>
+        </div>
+      </div>
+
+      <button class="btn-secondary" id="btnResetSample">
+        🔄 Reset to Sample Data (MH Clusters 1-3)
+      </button>
+    </div>
+
+    <!-- Primary Trigger -->
+    <button class="btn-primary" id="btnRunSimulation">
+      <span>▶ Run Actuarial Simulation</span>
+    </button>
+
+    <!-- Author Badge -->
+    <div style="margin-top:auto; padding-top:16px; border-top:1px solid var(--surface-border); font-size:0.75rem; color:var(--text-muted);">
+      <div>Actuarial Portfolio Engineering</div>
+      <div style="color:var(--brand-accent); font-weight:600; margin-top:2px;">Makarand Kulkarni</div>
+      <div style="font-size:0.7rem; color:var(--text-muted); opacity:0.8;">PMFBY &amp; WBCIS Underwriting</div>
+    </div>
+  </aside>
+
+  <!-- MAIN APP CONTAINER -->
+  <main class="main-content">
+    <!-- Top Navigation Bar -->
+    <header class="top-nav">
+      <nav class="tabs-list">
+        <button class="nav-tab active" data-tab="tab-summaries">
+          <span>📊 Main Summaries</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-compare">
+          <span>⚖️ Cluster Comparison</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-stability">
+          <span>🏆 Stability &amp; Pairings</span>
+        </button>
+        <button class="nav-tab" data-tab="tab-guide">
+          <span>📖 Methodology</span>
+        </button>
+      </nav>
+
+      <div class="nav-actions">
+        <button class="icon-btn" id="btnPresToggle" title="Presentation Mode (Fullscreen)">🖥️</button>
+        <button class="icon-btn" id="btnThemeToggle" title="Toggle Dark/Light Mode">🌓</button>
+        <button class="btn-secondary" id="btnExportClusterCsv">
+          <span>📥 Export CSV</span>
+        </button>
+      </div>
+    </header>
+
+    <!-- CONTENT BODY -->
+    <div class="content-body">
+
+      <!-- ========================================== -->
+      <!-- TAB 1: MAIN SUMMARIES                      -->
+      <!-- ========================================== -->
+      <section class="tab-pane active" id="tab-summaries">
+        <div class="view-header">
+          <div class="header-text">
+            <h1>PMFBY Portfolio Volatility &amp; Tail Risk</h1>
+            <p>
+              Simulates crop yield shock uncertainty across Insurance Units (IUs), modeling hierarchical portfolio pooling across districts and clusters under PMFBY guidelines.
+            </p>
+          </div>
+          <div class="badge-pill" id="badgeSimCount">Simulations: 1,000</div>
+        </div>
+
+        <!-- 4 Top KPI Cards -->
+        <div class="metrics-grid">
+          <div class="metric-card">
+            <div class="metric-title">
+              <span>Total Portfolio Liability (SI)</span>
+              <span>₹ Cr</span>
+            </div>
+            <div class="metric-value" id="kpiTotalSi">₹ 1,343.7 Cr</div>
+            <div class="metric-sub">
+              <span>Combined sum insured across clusters</span>
+            </div>
+          </div>
+
+          <div class="metric-card info">
+            <div class="metric-title">
+              <span>Expected Burn Rate</span>
+              <span>Mean</span>
+            </div>
+            <div class="metric-value" id="kpiBurnRate">0.76%</div>
+            <div class="metric-sub">
+              <span>Mean actuarial payout / Total SI</span>
+            </div>
+          </div>
+
+          <div class="metric-card warning">
+            <div class="metric-title">
+              <span>Portfolio Volatility (SD)</span>
+              <span>Std Dev</span>
+            </div>
+            <div class="metric-value" id="kpiBurnSd">0.42%</div>
+            <div class="metric-sub">
+              <span>Inter-scenario burn rate dispersion</span>
+            </div>
+          </div>
+
+          <div class="metric-card danger">
+            <div class="metric-title">
+              <span>Tail Risk (P95 VaR)</span>
+              <span>1-in-20 Year</span>
+            </div>
+            <div class="metric-value" id="kpiP95">1.52%</div>
+            <div class="metric-sub">
+              <span id="kpiP95Amount">Estimated liability: ₹ 20.4 Cr</span>
+            </div>
+          </div>
+        </div>
+
+        <!-- Charts Grid -->
+        <div class="charts-grid-2">
+          <div class="chart-panel">
+            <div class="panel-header">
+              <div class="panel-title">📊 Cluster Burn Rate &amp; Volatility (SD)</div>
+            </div>
+            <div class="chart-container" id="chartClusterBar"></div>
+          </div>
+
+          <div class="chart-panel">
+            <div class="panel-header">
+              <div class="panel-title">🛡️ Tail Risk Scenarios (P50 vs P90 vs P95)</div>
+            </div>
+            <div class="chart-container" id="chartTailRisk"></div>
+          </div>
+        </div>
+
+        <!-- Cluster Level Table -->
+        <div class="table-container">
+          <div class="table-toolbar">
+            <div class="panel-title">🌾 Cluster-Level Actuarial Summary</div>
+            <button class="btn-secondary" onclick="exportTableToCSV('tblCluster', 'cluster_actuarial_summary.csv')">
+              📥 Download Table CSV
+            </button>
+          </div>
+          <table class="styled-table" id="tblCluster">
+            <thead>
+              <tr>
+                <th>Cluster</th>
+                <th>Total SI (₹ Cr)</th>
+                <th>Expected Burn Rate</th>
+                <th>Burn Rate SD</th>
+                <th>CV (SD/Mean)</th>
+                <th>P50 (Median)</th>
+                <th>P90 (1-in-10)</th>
+                <th>P95 (1-in-20)</th>
+                <th>Stability Rank</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyCluster">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+
+        <!-- District Level Table -->
+        <div class="table-container">
+          <div class="table-toolbar">
+            <div class="panel-title">📍 District-Level Summary</div>
+            <input type="text" class="search-input" id="searchDistrict" placeholder="🔍 Search district or cluster...">
+          </div>
+          <table class="styled-table" id="tblDistrict">
+            <thead>
+              <tr>
+                <th>District</th>
+                <th>Cluster</th>
+                <th>Total SI (₹ Cr)</th>
+                <th>Burn Rate (%)</th>
+                <th>Burn Rate SD</th>
+                <th>CV (SD/Mean)</th>
+                <th>P90 (%)</th>
+                <th>P95 (%)</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyDistrict">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- TAB 2: CLUSTER COMPARISON                  -->
+      <!-- ========================================== -->
+      <section class="tab-pane" id="tab-compare">
+        <div class="view-header">
+          <div class="header-text">
+            <h1>Cluster-to-Cluster Risk Profiling</h1>
+            <p>
+              Compare risk-return characteristics, tail risk percentiles, and loss distributions between any two clusters to inform cluster bidding and quota allocation.
+            </p>
+          </div>
+        </div>
+
+        <!-- Selector Bar -->
+        <div class="compare-bar">
+          <div style="display:flex; align-items:center; gap:10px;">
+            <label style="font-weight:700; font-size:0.9rem;">Cluster A:</label>
+            <select class="select-custom" id="selClusterA"></select>
+          </div>
+          <div style="font-size:1.2rem; color:var(--brand-accent);">⚡ VS ⚡</div>
+          <div style="display:flex; align-items:center; gap:10px;">
+            <label style="font-weight:700; font-size:0.9rem;">Cluster B:</label>
+            <select class="select-custom" id="selClusterB"></select>
+          </div>
+        </div>
+
+        <!-- Head-to-Head Comparison Grid -->
+        <div class="charts-grid-2">
+          <div class="chart-panel">
+            <div class="panel-header">
+              <div class="panel-title">⚖️ Head-to-Head Metrics Comparison</div>
+            </div>
+            <div class="chart-container" id="chartCompareBars"></div>
+          </div>
+
+          <div class="chart-panel">
+            <div class="panel-header">
+              <div class="panel-title">📈 Simulated Loss Distribution Overlay</div>
+            </div>
+            <div class="chart-container" id="chartCompareDist"></div>
+          </div>
+        </div>
+
+        <!-- Detailed Comparison Table -->
+        <div class="table-container">
+          <div class="panel-title">📋 Direct Metric Breakdown</div>
+          <table class="styled-table" id="tblCompareDirect">
+            <thead>
+              <tr>
+                <th>Actuarial Metric</th>
+                <th id="thClusterA">Cluster A</th>
+                <th id="thClusterB">Cluster B</th>
+                <th>Variance / Delta</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyCompareDirect">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- TAB 3: STABILITY & CLUSTER PAIRINGS        -->
+      <!-- ========================================== -->
+      <section class="tab-pane" id="tab-stability">
+        <div class="view-header">
+          <div class="header-text">
+            <h1>Cluster Combinations &amp; Diversification Benefit</h1>
+            <p>
+              Evaluates multi-cluster bidding combinations. By taking advantage of geographic correlation offsets, insurers can reduce portfolio coefficient of variation (CV).
+            </p>
+          </div>
+        </div>
+
+        <div class="charts-grid-2">
+          <div class="chart-panel">
+            <div class="panel-header">
+              <div class="panel-title">🎯 Risk-Return Frontier (Mean Burn Rate vs CV)</div>
+            </div>
+            <div class="chart-container" id="chartRiskReturn"></div>
+          </div>
+
+          <div class="chart-panel">
+            <div class="panel-header">
+              <div class="panel-title">🧩 Top Cluster Combinations (Lowest Volatility)</div>
+            </div>
+            <div class="chart-container" id="chartTopCombos"></div>
+          </div>
+        </div>
+
+        <div class="table-container">
+          <div class="panel-title">🏆 Pairwise Combinations Ranked by Stability</div>
+          <table class="styled-table">
+            <thead>
+              <tr>
+                <th>Rank</th>
+                <th>Combo (Streamlit: find_top_combinations)</th>
+                <th>mean_Burn</th>
+                <th>cv (Risk)</th>
+                <th>Status</th>
+              </tr>
+            </thead>
+            <tbody id="tbodyCombos">
+              <!-- Rendered via JS -->
+            </tbody>
+          </table>
+        </div>
+      </section>
+
+
+      <!-- ========================================== -->
+      <!-- TAB 4: METHODOLOGY & PMFBY GUIDE           -->
+      <!-- ========================================== -->
+      <section class="tab-pane" id="tab-guide">
+        <div class="view-header">
+          <div class="header-text">
+            <h1>PMFBY Actuarial &amp; Simulation Methodology</h1>
+            <p>
+              Formal framework explaining the mathematical derivations, Monte Carlo yield shock simulation, and portfolio aggregation mechanics.
+            </p>
+          </div>
+        </div>
+
+        <div class="method-block">
+          <h4>1. Yield Shortfall Payout Equation</h4>
+          <p>
+            For each Insurance Unit (IU) $i$ and simulated season $s$, the yield payout ratio is computed against the contractual Threshold Yield $TY_i$ and indemnity factor $(1 - 	ext{indemnity})$:
+            <br>
+            $$	ext{Payout Ratio}_{i,s} = \min\left(1, \max\left(0, rac{TY_i 	imes (1 - 	ext{indemnity}) - Y_{i,s}}{TY_i}
+ight)
+ight)$$
+            Currency liabilities are bounded by the contractual liability cap:
+            <br>
+            $$	ext{Payout}_{i,s} = \min\left(	ext{Payout Ratio}_{i,s} 	imes 	ext{SI}_i 	imes 	ext{Area}_i, 	ext{Cap}_i 	imes 	ext{SI}_i 	imes 	ext{Area}_i
+ight)$$
+          </p>
+        </div>
+
+        <div class="method-block">
+          <h4>2. Normal Shock Monte Carlo Sampling</h4>
+          <p>
+            Historical yields per Insurance Unit provide empirical $\mu_i$ (mean yield) and $\sigma_i$ (standard deviation). Zero-variance records receive an actuarial minimum variance buffer of $10\% 	imes \mu_i$. Yields are simulated via independent normal random shocks:
+            <br>
+            $$Y_{i,s} = \max(0, \mu_i + Z_s \cdot \sigma_i), \quad Z_s \sim \mathcal{N}(0, 1)$$
+          </p>
+        </div>
+
+        <div class="method-block">
+          <h4>3. Hierarchical Aggregation &amp; Portfolio Effect</h4>
+          <p>
+            Rather than averaging individual burn rates, total payout currency is summed simultaneously across all IUs for each simulation scenario $s$:
+            <br>
+            $$	ext{Burn Rate}_{C,s} = rac{\sum_{i \in C} 	ext{Payout}_{i,s}}{\sum_{i \in C} 	ext{Total SI}_i}$$
+            Because high yields in some IUs offset shortfalls in others, the portfolio standard deviation $\sigma_C$ is strictly lower than the sum of individual components—demonstrating the <strong>Portfolio Pooling Effect</strong>.
+          </p>
+        </div>
+
+        <div class="method-block">
+          <h4>4. Value at Risk (VaR) &amp; Tail Metrics</h4>
+          <p>
+            Percentile payouts ($P_{90}$ and $P_{95}$) represent the 1-in-10 and 1-in-20 year worst-case losses. Coefficient of Variation ($CV = rac{\sigma}{\mu}$) quantifies relative pricing risk.
+          </p>
+        </div>
+      </section>
+
+    </div>
+
+    <!-- App Footer -->
+    <footer class="app-footer">
+      <div>Actuarial Crop Risk Analyzer | Standalone Single-Page Application</div>
+      <div>Designed for PMFBY &amp; WBCIS Underwriting Portfolios</div>
+    </footer>
+  </main>
+</div>
+
+<!-- Toast notification element -->
+<div class="toast-msg" id="toast">Simulation complete!</div>
+
+<!-- ========================================== -->
+<!-- JAVASCRIPT ANALYTICAL ENGINE               -->
+<!-- ========================================== -->
+<script>
+/**
+ * EMBEDDED SAMPLE DATA
+ */
+const EMBEDDED_DATA = {"yield_cols": ["State", "Cluster", "District", "Tehsil", "IU_id", "Crop", "year", "Yield_kg_ha", "area"], "yield_data": [["MH", "Cluster1", "Pune", "T1", "IU1", "Paddy", 2002, 4319, 2791], ["MH", "Cluster1", "Pune", "T1", "IU2", "Paddy", 2002, 4349, 2077], ["MH", "Cluster1", "Pune", "T2", "IU1", "Paddy", 2002, 3256, 3200], ["MH", "Cluster1", "Pune", "T2", "IU2", "Paddy", 2002, 3879, 2429], ["MH", "Cluster1", "Pune", "T2", "IU3", "Paddy", 2002, 4965, 2429], ["MH", "Cluster1", "Pune", "T3", "IU1", "Paddy", 2002, 4753, 2935], ["MH", "Cluster1", "Pune", "T3", "IU2", "Paddy", 2002, 3611, 3075], ["MH", "Cluster1", "Pune", "T3", "IU3", "Paddy", 2002, 3536, 2427], ["MH", "Cluster1", "Pune", "T4", "IU1", "Paddy", 2002, 4682, 2997], ["MH", "Cluster1", "Pune", "T4", "IU2", "Paddy", 2002, 3125, 3723], ["MH", "Cluster2", "Satara", "T1", "IU1", "Paddy", 2002, 3986, 2505], ["MH", "Cluster2", "Satara", "T1", "IU2", "Paddy", 2002, 3807, 3394], ["MH", "Cluster2", "Satara", "T2", "IU1", "Paddy", 2002, 4735, 3465], ["MH", "Cluster2", "Satara", "T2", "IU2", "Paddy", 2002, 4184, 3968], ["MH", "Cluster2", "Satara", "T2", "IU3", "Paddy", 2002, 4881, 2148], ["MH", "Cluster2", "Satara", "T3", "IU1", "Paddy", 2002, 3271, 3220], ["MH", "Cluster2", "Satara", "T3", "IU2", "Paddy", 2002, 3960, 2584], ["MH", "Cluster2", "Satara", "T3", "IU3", "Paddy", 2002, 4181, 2321], ["MH", "Cluster2", "Satara", "T4", "IU1", "Paddy", 2002, 3661, 2099], ["MH", "Cluster2", "Satara", "T4", "IU2", "Paddy", 2002, 3484, 3625], ["MH", "Cluster2", "Sangli", "T1", "IU1", "Paddy", 2002, 3341, 3828], ["MH", "Cluster2", "Sangli", "T1", "IU2", "Paddy", 2002, 4208, 2739], ["MH", "Cluster2", "Sangli", "T2", "IU1", "Paddy", 2002, 4495, 3552], ["MH", "Cluster2", "Sangli", "T2", "IU2", "Paddy", 2002, 3755, 2004], ["MH", "Cluster2", "Sangli", "T2", "IU3", "Paddy", 2002, 3867, 3208], ["MH", "Cluster2", "Sangli", "T3", "IU1", "Paddy", 2002, 3547, 2183], ["MH", "Cluster2", "Sangli", "T3", "IU2", "Paddy", 2002, 3754, 2876], ["MH", "Cluster2", "Sangli", "T3", "IU3", "Paddy", 2002, 3112, 2622], ["MH", "Cluster2", "Sangli", "T4", "IU1", "Paddy", 2002, 3486, 3091], ["MH", "Cluster2", "Sangli", "T4", "IU2", "Paddy", 2002, 4453, 3864], ["MH", "Cluster1", "Pune", "T1", "IU1", "Paddy", 2002, 4107, 2663], ["MH", "Cluster1", "Pune", "T1", "IU2", "Paddy", 2002, 4943, 2668], ["MH", "Cluster1", "Pune", "T2", "IU1", "Paddy", 2002, 4372, 2107], ["MH", "Cluster1", "Pune", "T2", "IU2", "Paddy", 2002, 3415, 3045], ["MH", "Cluster1", "Pune", "T2", "IU3", "Paddy", 2002, 4656, 2401], ["MH", "Cluster1", "Pune", "T3", "IU1", "Paddy", 2002, 3130, 3313], ["MH", "Cluster1", "Pune", "T3", "IU2", "Paddy", 2002, 3148, 3974], ["MH", "Cluster1", "Pune", "T3", "IU3", "Paddy", 2002, 4475, 2833], ["MH", "Cluster1", "Pune", "T4", "IU1", "Paddy", 2002, 3046, 3028], ["MH", "Cluster1", "Pune", "T4", "IU2", "Paddy", 2002, 3691, 3360], ["MH", "Cluster2", "Satara", "T1", "IU1", "Paddy", 2002, 3614, 2311], ["MH", "Cluster2", "Satara", "T1", "IU2", "Paddy", 2002, 3455, 3858], ["MH", "Cluster2", "Satara", "T2", "IU1", "Paddy", 2002, 3901, 2382], ["MH", "Cluster2", "Satara", "T2", "IU2", "Paddy", 2002, 4258, 3132], ["MH", "Cluster2", "Satara", "T2", "IU3", "Paddy", 2002, 4950, 3675], ["MH", "Cluster2", "Satara", "T3", "IU1", "Paddy", 2002, 3300, 3320], ["MH", "Cluster2", "Satara", "T3", "IU2", "Paddy", 2002, 4857, 3691], ["MH", "Cluster2", "Satara", "T3", "IU3", "Paddy", 2002, 4623, 3912], ["MH", "Cluster2", "Satara", "T4", "IU1", "Paddy", 2002, 4298, 2471], ["MH", "Cluster2", "Satara", "T4", "IU2", "Paddy", 2002, 3521, 3009], ["MH", "Cluster2", "Sangli", "T1", "IU1", "Paddy", 2002, 4238, 2896], ["MH", "Cluster2", "Sangli", "T1", "IU2", "Paddy", 2002, 4134, 2666], ["MH", "Cluster2", "Sangli", "T2", "IU1", "Paddy", 2002, 3992, 3093], ["MH", "Cluster2", "Sangli", "T2", "IU2", "Paddy", 2002, 4640, 2321], ["MH", "Cluster2", "Sangli", "T2", "IU3", "Paddy", 2002, 3673, 2846], ["MH", "Cluster2", "Sangli", "T3", "IU1", "Paddy", 2002, 3105, 3522], ["MH", "Cluster2", "Sangli", "T3", "IU2", "Paddy", 2002, 3277, 2963], ["MH", "Cluster2", "Sangli", "T3", "IU3", "Paddy", 2002, 4433, 2701], ["MH", "Cluster2", "Sangli", "T4", "IU1", "Paddy", 2002, 4117, 3750], ["MH", "Cluster2", "Sangli", "T4", "IU2", "Paddy", 2002, 4786, 3060], ["MH", "Cluster1", "Pune", "T1", "IU1", "Paddy", 2003, 3428, 2174], ["MH", "Cluster1", "Pune", "T1", "IU2", "Paddy", 2003, 3201, 2538], ["MH", "Cluster1", "Pune", "T2", "IU1", "Paddy", 2003, 3548, 2191], ["MH", "Cluster1", "Pune", "T2", "IU2", "Paddy", 2003, 3001, 3533], ["MH", "Cluster1", "Pune", "T2", "IU3", "Paddy", 2003, 4313, 3490], ["MH", "Cluster1", "Pune", "T3", "IU1", "Paddy", 2003, 3404, 3142], ["MH", "Cluster1", "Pune", "T3", "IU2", "Paddy", 2003, 4786, 3712], ["MH", "Cluster1", "Pune", "T3", "IU3", "Paddy", 2003, 3112, 3107], ["MH", "Cluster1", "Pune", "T4", "IU1", "Paddy", 2003, 3971, 3324], ["MH", "Cluster1", "Pune", "T4", "IU2", "Paddy", 2003, 4772, 2614], ["MH", "Cluster2", "Satara", "T1", "IU1", "Paddy", 2003, 3062, 2892], ["MH", "Cluster2", "Satara", "T1", "IU2", "Paddy", 2003, 3627, 2227], ["MH", "Cluster2", "Satara", "T2", "IU1", "Paddy", 2003, 3442, 3725], ["MH", "Cluster2", "Satara", "T2", "IU2", "Paddy", 2003, 4520, 3038], ["MH", "Cluster2", "Satara", "T2", "IU3", "Paddy", 2003, 3154, 2889], ["MH", "Cluster2", "Satara", "T3", "IU1", "Paddy", 2003, 4866, 2348], ["MH", "Cluster2", "Satara", "T3", "IU2", "Paddy", 2003, 3258, 2778], ["MH", "Cluster2", "Satara", "T3", "IU3", "Paddy", 2003, 3297, 3975], ["MH", "Cluster2", "Satara", "T4", "IU1", "Paddy", 2003, 4890, 3088], ["MH", "Cluster2", "Satara", "T4", "IU2", "Paddy", 2003, 3898, 2726], ["MH", "Cluster2", "Sangli", "T1", "IU1", "Paddy", 2003, 3943, 3821], ["MH", "Cluster2", "Sangli", "T1", "IU2", "Paddy", 2003, 3870, 3918], ["MH", "Cluster2", "Sangli", "T2", "IU1", "Paddy", 2003, 4656, 2986], ["MH", "Cluster2", "Sangli", "T2", "IU2", "Paddy", 2003, 3744, 2321], ["MH", "Cluster2", "Sangli", "T2", "IU3", "Paddy", 2003, 4218, 2383], ["MH", "Cluster2", "Sangli", "T3", "IU1", "Paddy", 2003, 3387, 2262], ["MH", "Cluster2", "Sangli", "T3", "IU2", "Paddy", 2003, 3299, 3438], ["MH", "Cluster2", "Sangli", "T3", "IU3", "Paddy", 2003, 4512, 2193], ["MH", "Cluster2", "Sangli", "T4", "IU1", "Paddy", 2003, 3494, 2858], ["MH", "Cluster2", "Sangli", "T4", "IU2", "Paddy", 2003, 3530, 2420], ["MH", "Cluster1", "Pune", "T1", "IU1", "Paddy", 2003, 4780, 3488], ["MH", "Cluster1", "Pune", "T1", "IU2", "Paddy", 2003, 4715, 2893], ["MH", "Cluster1", "Pune", "T2", "IU1", "Paddy", 2003, 4660, 2447], ["MH", "Cluster1", "Pune", "T2", "IU2", "Paddy", 2003, 3354, 3558], ["MH", "Cluster1", "Pune", "T2", "IU3", "Paddy", 2003, 4253, 2812], ["MH", "Cluster1", "Pune", "T3", "IU1", "Paddy", 2003, 3639, 2168], ["MH", "Cluster1", "Pune", "T3", "IU2", "Paddy", 2003, 4648, 2499], ["MH", "Cluster1", "Pune", "T3", "IU3", "Paddy", 2003, 3101, 3939], ["MH", "Cluster1", "Pune", "T4", "IU1", "Paddy", 2003, 4676, 2105], ["MH", "Cluster1", "Pune", "T4", "IU2", "Paddy", 2003, 4037, 2904], ["MH", "Cluster2", "Satara", "T1", "IU1", "Paddy", 2003, 3364, 2860], ["MH", "Cluster2", "Satara", "T1", "IU2", "Paddy", 2003, 4812, 3389], ["MH", "Cluster2", "Satara", "T2", "IU1", "Paddy", 2003, 4760, 2072], ["MH", "Cluster2", "Satara", "T2", "IU2", "Paddy", 2003, 3613, 3993], ["MH", "Cluster2", "Satara", "T2", "IU3", "Paddy", 2003, 4304, 3334], ["MH", "Cluster2", "Satara", "T3", "IU1", "Paddy", 2003, 3917, 3124], ["MH", "Cluster2", "Satara", "T3", "IU2", "Paddy", 2003, 3507, 2250], ["MH", "Cluster2", "Satara", "T3", "IU3", "Paddy", 2003, 4591, 3524], ["MH", "Cluster2", "Satara", "T4", "IU1", "Paddy", 2003, 4124, 3383], ["MH", "Cluster2", "Satara", "T4", "IU2", "Paddy", 2003, 4266, 2864], ["MH", "Cluster2", "Sangli", "T1", "IU1", "Paddy", 2003, 4368, 2904], ["MH", "Cluster2", "Sangli", "T1", "IU2", "Paddy", 2003, 4660, 3550], ["MH", "Cluster2", "Sangli", "T2", "IU1", "Paddy", 2003, 4969, 3143], ["MH", "Cluster2", "Sangli", "T2", "IU2", "Paddy", 2003, 3758, 3510], ["MH", "Cluster2", "Sangli", "T2", "IU3", "Paddy", 2003, 4326, 3000], ["MH", "Cluster2", "Sangli", "T3", "IU1", "Paddy", 2003, 4892, 3214], ["MH", "Cluster2", "Sangli", "T3", "IU2", "Paddy", 2003, 4006, 2956], ["MH", "Cluster2", "Sangli", "T3", "IU3", "Paddy", 2003, 4989, 3483], ["MH", "Cluster2", "Sangli", "T4", "IU1", "Paddy", 2003, 3444, 3513], ["MH", "Cluster2", "Sangli", "T4", "IU2", "Paddy", 2003, 3318, 2806], ["MH", "Cluster1", "Pune", "T1", "IU1", "Soybean", 2002, 3254, 3669], ["MH", "Cluster1", "Pune", "T1", "IU2", "Soybean", 2002, 4632, 2408], ["MH", "Cluster1", "Pune", "T2", "IU1", "Soybean", 2002, 4984, 3775], ["MH", "Cluster1", "Pune", "T2", "IU2", "Soybean", 2002, 4170, 2883], ["MH", "Cluster1", "Pune", "T2", "IU3", "Soybean", 2002, 4444, 3590], ["MH", "Cluster1", "Pune", "T3", "IU1", "Soybean", 2002, 3259, 3227], ["MH", "Cluster1", "Pune", "T3", "IU2", "Soybean", 2002, 3480, 3612], ["MH", "Cluster1", "Pune", "T3", "IU3", "Soybean", 2002, 4148, 3887], ["MH", "Cluster1", "Pune", "T4", "IU1", "Soybean", 2002, 4411, 2912], ["MH", "Cluster1", "Pune", "T4", "IU2", "Soybean", 2002, 3075, 2214], ["MH", "Cluster2", "Satara", "T1", "IU1", "Soybean", 2002, 3905, 2128], ["MH", "Cluster2", "Satara", "T1", "IU2", "Soybean", 2002, 4476, 3448], ["MH", "Cluster2", "Satara", "T2", "IU1", "Soybean", 2002, 4925, 3346], ["MH", "Cluster2", "Satara", "T2", "IU2", "Soybean", 2002, 3053, 3223], ["MH", "Cluster2", "Satara", "T2", "IU3", "Soybean", 2002, 3591, 3846], ["MH", "Cluster2", "Satara", "T3", "IU1", "Soybean", 2002, 4011, 3766], ["MH", "Cluster2", "Satara", "T3", "IU2", "Soybean", 2002, 4183, 2634], ["MH", "Cluster2", "Satara", "T3", "IU3", "Soybean", 2002, 3419, 3586], ["MH", "Cluster2", "Satara", "T4", "IU1", "Soybean", 2002, 4642, 3470], ["MH", "Cluster2", "Satara", "T4", "IU2", "Soybean", 2002, 3458, 2477], ["MH", "Cluster2", "Sangli", "T1", "IU1", "Soybean", 2002, 4443, 2142], ["MH", "Cluster2", "Sangli", "T1", "IU2", "Soybean", 2002, 3152, 3051], ["MH", "Cluster2", "Sangli", "T2", "IU1", "Soybean", 2002, 4644, 2948], ["MH", "Cluster2", "Sangli", "T2", "IU2", "Soybean", 2002, 4754, 2200], ["MH", "Cluster2", "Sangli", "T2", "IU3", "Soybean", 2002, 3268, 2428], ["MH", "Cluster2", "Sangli", "T3", "IU1", "Soybean", 2002, 3266, 3480], ["MH", "Cluster2", "Sangli", "T3", "IU2", "Soybean", 2002, 4049, 2847], ["MH", "Cluster2", "Sangli", "T3", "IU3", "Soybean", 2002, 4810, 3924], ["MH", "Cluster2", "Sangli", "T4", "IU1", "Soybean", 2002, 3642, 3869], ["MH", "Cluster2", "Sangli", "T4", "IU2", "Soybean", 2002, 3881, 3640], ["MH", "Cluster1", "Pune", "T1", "IU1", "Soybean", 2002, 3776, 2538], ["MH", "Cluster1", "Pune", "T1", "IU2", "Soybean", 2002, 4319, 3691], ["MH", "Cluster1", "Pune", "T2", "IU1", "Soybean", 2002, 3869, 3438], ["MH", "Cluster1", "Pune", "T2", "IU2", "Soybean", 2002, 4389, 2030], ["MH", "Cluster1", "Pune", "T2", "IU3", "Soybean", 2002, 4988, 3328], ["MH", "Cluster1", "Pune", "T3", "IU1", "Soybean", 2002, 3736, 2686], ["MH", "Cluster1", "Pune", "T3", "IU2", "Soybean", 2002, 3868, 2335], ["MH", "Cluster1", "Pune", "T3", "IU3", "Soybean", 2002, 4035, 2316], ["MH", "Cluster1", "Pune", "T4", "IU1", "Soybean", 2002, 4499, 2047], ["MH", "Cluster1", "Pune", "T4", "IU2", "Soybean", 2002, 3819, 3711], ["MH", "Cluster2", "Satara", "T1", "IU1", "Soybean", 2002, 3278, 3677], ["MH", "Cluster2", "Satara", "T1", "IU2", "Soybean", 2002, 4327, 3393], ["MH", "Cluster2", "Satara", "T2", "IU1", "Soybean", 2002, 4978, 3559], ["MH", "Cluster2", "Satara", "T2", "IU2", "Soybean", 2002, 4520, 3045], ["MH", "Cluster2", "Satara", "T2", "IU3", "Soybean", 2002, 4047, 3782], ["MH", "Cluster2", "Satara", "T3", "IU1", "Soybean", 2002, 3469, 3775], ["MH", "Cluster2", "Satara", "T3", "IU2", "Soybean", 2002, 3290, 3606], ["MH", "Cluster2", "Satara", "T3", "IU3", "Soybean", 2002, 4567, 2325], ["MH", "Cluster2", "Satara", "T4", "IU1", "Soybean", 2002, 3567, 3750], ["MH", "Cluster2", "Satara", "T4", "IU2", "Soybean", 2002, 3440, 2400], ["MH", "Cluster2", "Sangli", "T1", "IU1", "Soybean", 2002, 4478, 2041], ["MH", "Cluster2", "Sangli", "T1", "IU2", "Soybean", 2002, 4461, 2677], ["MH", "Cluster2", "Sangli", "T2", "IU1", "Soybean", 2002, 3216, 2863], ["MH", "Cluster2", "Sangli", "T2", "IU2", "Soybean", 2002, 3856, 2324], ["MH", "Cluster2", "Sangli", "T2", "IU3", "Soybean", 2002, 3399, 2497], ["MH", "Cluster2", "Sangli", "T3", "IU1", "Soybean", 2002, 3979, 3313], ["MH", "Cluster2", "Sangli", "T3", "IU2", "Soybean", 2002, 3133, 3782], ["MH", "Cluster2", "Sangli", "T3", "IU3", "Soybean", 2002, 3001, 3548], ["MH", "Cluster2", "Sangli", "T4", "IU1", "Soybean", 2002, 3737, 2089], ["MH", "Cluster2", "Sangli", "T4", "IU2", "Soybean", 2002, 4300, 2287], ["MH", "Cluster1", "Pune", "T1", "IU1", "Soybean", 2003, 4776, 2931], ["MH", "Cluster1", "Pune", "T1", "IU2", "Soybean", 2003, 3314, 2528], ["MH", "Cluster1", "Pune", "T2", "IU1", "Soybean", 2003, 4797, 2651], ["MH", "Cluster1", "Pune", "T2", "IU2", "Soybean", 2003, 3303, 3284], ["MH", "Cluster1", "Pune", "T2", "IU3", "Soybean", 2003, 4078, 3157], ["MH", "Cluster1", "Pune", "T3", "IU1", "Soybean", 2003, 3868, 3711], ["MH", "Cluster1", "Pune", "T3", "IU2", "Soybean", 2003, 4482, 3678], ["MH", "Cluster1", "Pune", "T3", "IU3", "Soybean", 2003, 3046, 3934], ["MH", "Cluster1", "Pune", "T4", "IU1", "Soybean", 2003, 3578, 3834], ["MH", "Cluster1", "Pune", "T4", "IU2", "Soybean", 2003, 3795, 3838], ["MH", "Cluster2", "Satara", "T1", "IU1", "Soybean", 2003, 4066, 2049], ["MH", "Cluster2", "Satara", "T1", "IU2", "Soybean", 2003, 3726, 2381], ["MH", "Cluster2", "Satara", "T2", "IU1", "Soybean", 2003, 3270, 2629], ["MH", "Cluster2", "Satara", "T2", "IU2", "Soybean", 2003, 3622, 3353], ["MH", "Cluster2", "Satara", "T2", "IU3", "Soybean", 2003, 3532, 3008], ["MH", "Cluster2", "Satara", "T3", "IU1", "Soybean", 2003, 3945, 2217], ["MH", "Cluster2", "Satara", "T3", "IU2", "Soybean", 2003, 4953, 3996], ["MH", "Cluster2", "Satara", "T3", "IU3", "Soybean", 2003, 3100, 3113], ["MH", "Cluster2", "Satara", "T4", "IU1", "Soybean", 2003, 4963, 3501], ["MH", "Cluster2", "Satara", "T4", "IU2", "Soybean", 2003, 4305, 3976], ["MH", "Cluster2", "Sangli", "T1", "IU1", "Soybean", 2003, 3271, 3427], ["MH", "Cluster2", "Sangli", "T1", "IU2", "Soybean", 2003, 3257, 3035], ["MH", "Cluster2", "Sangli", "T2", "IU1", "Soybean", 2003, 3728, 3268], ["MH", "Cluster2", "Sangli", "T2", "IU2", "Soybean", 2003, 4495, 3348], ["MH", "Cluster2", "Sangli", "T2", "IU3", "Soybean", 2003, 4727, 3834], ["MH", "Cluster2", "Sangli", "T3", "IU1", "Soybean", 2003, 3129, 3341], ["MH", "Cluster2", "Sangli", "T3", "IU2", "Soybean", 2003, 4882, 3989], ["MH", "Cluster2", "Sangli", "T3", "IU3", "Soybean", 2003, 4809, 3018], ["MH", "Cluster2", "Sangli", "T4", "IU1", "Soybean", 2003, 4736, 2159], ["MH", "Cluster2", "Sangli", "T4", "IU2", "Soybean", 2003, 3411, 3693], ["MH", "Cluster1", "Pune", "T1", "IU1", "Soybean", 2003, 3762, 3193], ["MH", "Cluster1", "Pune", "T1", "IU2", "Soybean", 2003, 4204, 2357], ["MH", "Cluster1", "Pune", "T2", "IU1", "Soybean", 2003, 4586, 2395], ["MH", "Cluster1", "Pune", "T2", "IU2", "Soybean", 2003, 3252, 3177], ["MH", "Cluster1", "Pune", "T2", "IU3", "Soybean", 2003, 4650, 3412], ["MH", "Cluster1", "Pune", "T3", "IU1", "Soybean", 2003, 4217, 2210], ["MH", "Cluster1", "Pune", "T3", "IU2", "Soybean", 2003, 4528, 3970], ["MH", "Cluster1", "Pune", "T3", "IU3", "Soybean", 2003, 3177, 3566], ["MH", "Cluster1", "Pune", "T4", "IU1", "Soybean", 2003, 4293, 3191], ["MH", "Cluster1", "Pune", "T4", "IU2", "Soybean", 2003, 4538, 3476], ["MH", "Cluster2", "Satara", "T1", "IU1", "Soybean", 2003, 4608, 2423], ["MH", "Cluster2", "Satara", "T1", "IU2", "Soybean", 2003, 4002, 3846], ["MH", "Cluster2", "Satara", "T2", "IU1", "Soybean", 2003, 3712, 3850], ["MH", "Cluster2", "Satara", "T2", "IU2", "Soybean", 2003, 3160, 2291], ["MH", "Cluster2", "Satara", "T2", "IU3", "Soybean", 2003, 4563, 2418], ["MH", "Cluster2", "Satara", "T3", "IU1", "Soybean", 2003, 4130, 2675], ["MH", "Cluster2", "Satara", "T3", "IU2", "Soybean", 2003, 4862, 2247], ["MH", "Cluster2", "Satara", "T3", "IU3", "Soybean", 2003, 3815, 2520], ["MH", "Cluster2", "Satara", "T4", "IU1", "Soybean", 2003, 3618, 3422], ["MH", "Cluster2", "Satara", "T4", "IU2", "Soybean", 2003, 4041, 2227], ["MH", "Cluster2", "Sangli", "T1", "IU1", "Soybean", 2003, 4617, 2893], ["MH", "Cluster2", "Sangli", "T1", "IU2", "Soybean", 2003, 3286, 3459], ["MH", "Cluster2", "Sangli", "T2", "IU1", "Soybean", 2003, 3873, 2101], ["MH", "Cluster2", "Sangli", "T2", "IU2", "Soybean", 2003, 4753, 3535], ["MH", "Cluster2", "Sangli", "T2", "IU3", "Soybean", 2003, 4004, 2569], ["MH", "Cluster2", "Sangli", "T3", "IU1", "Soybean", 2003, 3844, 2935], ["MH", "Cluster2", "Sangli", "T3", "IU2", "Soybean", 2003, 3901, 3160], ["MH", "Cluster2", "Sangli", "T3", "IU3", "Soybean", 2003, 3564, 2904], ["MH", "Cluster2", "Sangli", "T4", "IU1", "Soybean", 2003, 4795, 2687], ["MH", "Cluster2", "Sangli", "T4", "IU2", "Soybean", 2003, 4007, 2514], ["MH", "Cluster3", "Ratnagiri", "T1", "IU1", "Paddy", 2002, 2818, 2011], ["MH", "Cluster3", "Ratnagiri", "T1", "IU2", "Paddy", 2002, 3904, 3313], ["MH", "Cluster3", "Ratnagiri", "T2", "IU1", "Paddy", 2002, 2458, 3410], ["MH", "Cluster3", "Ratnagiri", "T2", "IU2", "Paddy", 2002, 4384, 2272], ["MH", "Cluster3", "Ratnagiri", "T2", "IU3", "Paddy", 2002, 2230, 3294], ["MH", "Cluster3", "Ratnagiri", "T3", "IU1", "Paddy", 2002, 2845, 2333], ["MH", "Cluster3", "Ratnagiri", "T3", "IU2", "Paddy", 2002, 4648, 2920], ["MH", "Cluster3", "Ratnagiri", "T3", "IU3", "Paddy", 2002, 4020, 2970], ["MH", "Cluster3", "Ratnagiri", "T4", "IU1", "Paddy", 2002, 2719, 2738], ["MH", "Cluster3", "Ratnagiri", "T4", "IU2", "Paddy", 2002, 4002, 3913], ["MH", "Cluster3", "Ratnagiri", "T1", "IU1", "Paddy", 2003, 4137, 2078], ["MH", "Cluster3", "Ratnagiri", "T1", "IU2", "Paddy", 2003, 3556, 2790], ["MH", "Cluster3", "Ratnagiri", "T2", "IU1", "Paddy", 2003, 2232, 2007], ["MH", "Cluster3", "Ratnagiri", "T2", "IU2", "Paddy", 2003, 4691, 3306], ["MH", "Cluster3", "Ratnagiri", "T2", "IU3", "Paddy", 2003, 3859, 3029], ["MH", "Cluster3", "Ratnagiri", "T3", "IU1", "Paddy", 2003, 4460, 3626], ["MH", "Cluster3", "Ratnagiri", "T3", "IU2", "Paddy", 2003, 3414, 3913], ["MH", "Cluster3", "Ratnagiri", "T3", "IU3", "Paddy", 2003, 4634, 2104], ["MH", "Cluster3", "Ratnagiri", "T4", "IU1", "Paddy", 2003, 4473, 2488], ["MH", "Cluster3", "Ratnagiri", "T4", "IU2", "Paddy", 2003, 3736, 3456], ["MH", "Cluster3", "Kolhapur", "T1", "IU1", "Paddy", 2002, 2828, 3836], ["MH", "Cluster3", "Kolhapur", "T1", "IU2", "Paddy", 2002, 4202, 2048], ["MH", "Cluster3", "Kolhapur", "T2", "IU1", "Paddy", 2002, 4291, 3192], ["MH", "Cluster3", "Kolhapur", "T2", "IU2", "Paddy", 2002, 3131, 2140], ["MH", "Cluster3", "Kolhapur", "T2", "IU3", "Paddy", 2002, 2417, 2700], ["MH", "Cluster3", "Kolhapur", "T3", "IU1", "Paddy", 2002, 2398, 3991], ["MH", "Cluster3", "Kolhapur", "T3", "IU2", "Paddy", 2002, 3481, 2623], ["MH", "Cluster3", "Kolhapur", "T3", "IU3", "Paddy", 2002, 4021, 3995], ["MH", "Cluster3", "Kolhapur", "T4", "IU1", "Paddy", 2002, 2095, 3579], ["MH", "Cluster3", "Kolhapur", "T4", "IU2", "Paddy", 2002, 3819, 2011], ["MH", "Cluster3", "Kolhapur", "T1", "IU1", "Paddy", 2003, 2474, 2502], ["MH", "Cluster3", "Kolhapur", "T1", "IU2", "Paddy", 2003, 2265, 3246], ["MH", "Cluster3", "Kolhapur", "T2", "IU1", "Paddy", 2003, 2503, 2279], ["MH", "Cluster3", "Kolhapur", "T2", "IU2", "Paddy", 2003, 3927, 3156], ["MH", "Cluster3", "Kolhapur", "T2", "IU3", "Paddy", 2003, 3214, 3738], ["MH", "Cluster3", "Kolhapur", "T3", "IU1", "Paddy", 2003, 3618, 2810], ["MH", "Cluster3", "Kolhapur", "T3", "IU2", "Paddy", 2003, 3909, 3872], ["MH", "Cluster3", "Kolhapur", "T3", "IU3", "Paddy", 2003, 3245, 3581], ["MH", "Cluster3", "Kolhapur", "T4", "IU1", "Paddy", 2003, 2328, 3856], ["MH", "Cluster3", "Kolhapur", "T4", "IU2", "Paddy", 2003, 2814, 2393], ["MH", "Cluster3", "Kolhapur", "T1", "IU1", "Soybean", 2002, 4655, 3685], ["MH", "Cluster3", "Kolhapur", "T1", "IU2", "Soybean", 2002, 4768, 3170], ["MH", "Cluster3", "Kolhapur", "T2", "IU1", "Soybean", 2002, 4128, 3668], ["MH", "Cluster3", "Kolhapur", "T2", "IU2", "Soybean", 2002, 3670, 2014], ["MH", "Cluster3", "Kolhapur", "T2", "IU3", "Soybean", 2002, 3280, 2396], ["MH", "Cluster3", "Kolhapur", "T3", "IU1", "Soybean", 2002, 2999, 3534], ["MH", "Cluster3", "Kolhapur", "T3", "IU2", "Soybean", 2002, 3644, 2814], ["MH", "Cluster3", "Kolhapur", "T3", "IU3", "Soybean", 2002, 3210, 2825], ["MH", "Cluster3", "Kolhapur", "T4", "IU1", "Soybean", 2002, 2747, 2133], ["MH", "Cluster3", "Kolhapur", "T4", "IU2", "Soybean", 2002, 3944, 3581], ["MH", "Cluster3", "Kolhapur", "T1", "IU1", "Soybean", 2003, 2473, 3142], ["MH", "Cluster3", "Kolhapur", "T1", "IU2", "Soybean", 2003, 3705, 3907], ["MH", "Cluster3", "Kolhapur", "T2", "IU1", "Soybean", 2003, 4103, 2111], ["MH", "Cluster3", "Kolhapur", "T2", "IU2", "Soybean", 2003, 3380, 2995], ["MH", "Cluster3", "Kolhapur", "T2", "IU3", "Soybean", 2003, 3411, 3266], ["MH", "Cluster3", "Kolhapur", "T3", "IU1", "Soybean", 2003, 4505, 2492], ["MH", "Cluster3", "Kolhapur", "T3", "IU2", "Soybean", 2003, 4821, 3288], ["MH", "Cluster3", "Kolhapur", "T3", "IU3", "Soybean", 2003, 2412, 3249], ["MH", "Cluster3", "Kolhapur", "T4", "IU1", "Soybean", 2003, 3867, 2711], ["MH", "Cluster3", "Kolhapur", "T4", "IU2", "Soybean", 2003, 3378, 3572]], "thresh_cols": ["State", "Cluster", "District", "Crop", "Threshold", "sum_insured_per_ha", "cap_default_pct"], "thresh_data": [["MH", "Cluster1", "Pune", "Paddy", 4000, 50000, ""], ["MH", "Cluster2", "Satara", "Paddy", 4100, 50000, ""], ["MH", "Cluster2", "Sangli", "Paddy", 3900, 60000, ""], ["MH", "Cluster1", "Pune", "Soybean", 3700, 40000, 10.0], ["MH", "Cluster2", "Satara", "Soybean", 4000, 50000, 10.0], ["MH", "Cluster2", "Sangli", "Soybean", 3500, 40000, 10.0], ["MH", "Cluster3", "Ratnagiri", "Paddy", 4150, 40000, ""], ["MH", "Cluster3", "Kolhapur", "Paddy", 4000, 60000, ""], ["MH", "Cluster3", "Kolhapur", "Soybean", 3800, 55000, 15.0]]};
+
+/**
+ * APPLICATION STATE
+ */
+const AppState = {
+  yieldRows: [],
+  threshRows: [],
+  nSims: 1000,
+  indemnity: 0.70, // Matches Streamlit default 70% (indemnity_factor = 0.30)
+  results: {
+    districtSummary: [],
+    clusterSummary: [],
+    simMatrix: null
+  },
+  theme: 'dark'
+};
+
+/**
+ * INITIALIZATION & DATA PARSER
+ */
+function initData() {
+  // Map embedded yield rows
+  const yCols = EMBEDDED_DATA.yield_cols;
+  AppState.yieldRows = EMBEDDED_DATA.yield_data.map(r => {
+    let obj = {};
+    yCols.forEach((col, idx) => obj[col] = r[idx]);
+    return {
+      State: String(obj.State || '').trim(),
+      Cluster: String(obj.Cluster || '').trim(),
+      District: String(obj.District || '').trim(),
+      Tehsil: String(obj.Tehsil || '').trim(),
+      IU_id: String(obj.IU_id || '').trim(),
+      Crop: String(obj.Crop || '').trim(),
+      year: parseInt(obj.year, 10),
+      Yield_kg_ha: parseFloat(obj.Yield_kg_ha) || 0,
+      area: parseFloat(obj.area) || 1.0
+    };
+  });
+
+  // Map embedded threshold rows
+  const tCols = EMBEDDED_DATA.thresh_cols;
+  AppState.threshRows = EMBEDDED_DATA.thresh_data.map(r => {
+    let obj = {};
+    tCols.forEach((col, idx) => obj[col] = r[idx]);
+    let cap = obj.cap_default_pct;
+    let capVal = (cap !== '' && cap !== null && cap !== undefined) ? parseFloat(cap) : 100.0;
+    return {
+      State: String(obj.State || '').trim(),
+      Cluster: String(obj.Cluster || '').trim(),
+      District: String(obj.District || '').trim(),
+      Crop: String(obj.Crop || '').trim(),
+      Threshold: parseFloat(obj.Threshold) || 0,
+      sum_insured_per_ha: parseFloat(obj.sum_insured_per_ha) || 0,
+      cap_default_pct: capVal / 100.0
+    };
+  });
+}
+
+/**
+ * FAST PSEUDO-RANDOM GAUSSIAN GENERATOR (Box-Muller)
+ */
+function generateGaussian() {
+  let u = 0, v = 0;
+  while (u === 0) u = Math.random();
+  while (v === 0) v = Math.random();
+  return Math.sqrt(-2.0 * Math.log(u)) * Math.cos(2.0 * Math.PI * v);
+}
+
+/**
+ * QUANTILE HELPER (linear interpolation)
+ */
+function quantile(arr, q) {
+  const sorted = arr.slice().sort((a, b) => a - b);
+  const pos = (sorted.length - 1) * q;
+  const base = Math.floor(pos);
+  const rest = pos - base;
+  if (sorted[base + 1] !== undefined) {
+    return sorted[base] + rest * (sorted[base + 1] - sorted[base]);
+  } else {
+    return sorted[base];
+  }
+}
+
+/**
+ * MONTE CARLO SIMULATION CORE ENGINE
+ * Exactly replicates simulate_cluster_risks from crop_risk_backend1.py
+ */
+function runSimulation() {
+  const nSims = AppState.nSims;
+  const indemnityFactor = 1.0 - AppState.indemnity;
+
+  // 1. Group yields by IU (State, Cluster, District, Tehsil, IU_id, Crop)
+  const iuGroups = {};
+  AppState.yieldRows.forEach(y => {
+    const key = `${y.State}|${y.Cluster}|${y.District}|${y.Tehsil}|${y.IU_id}|${y.Crop}`;
+    if (!iuGroups[key]) {
+      iuGroups[key] = {
+        State: y.State,
+        Cluster: y.Cluster,
+        District: y.District,
+        Tehsil: y.Tehsil,
+        IU_id: y.IU_id,
+        Crop: y.Crop,
+        yields: [],
+        areas: []
+      };
+    }
+    iuGroups[key].yields.push(y.Yield_kg_ha);
+    iuGroups[key].areas.push(y.area);
+  });
+
+  // Match each IU with contractual terms from Thresholds
+  const iuList = [];
+  for (const k in iuGroups) {
+    const g = iuGroups[k];
+    const meanYield = g.yields.reduce((a, b) => a + b, 0) / g.yields.length;
+    let stdYield = 0;
+    if (g.yields.length > 1) {
+      const sqDiffs = g.yields.map(v => Math.pow(v - meanYield, 2));
+      stdYield = Math.sqrt(sqDiffs.reduce((a, b) => a + b, 0) / (g.yields.length - 1));
+    }
+    // 10% rule for zero variance
+    if (stdYield === 0) {
+      stdYield = meanYield * 0.1;
+    }
+    const avgArea = g.areas.reduce((a, b) => a + b, 0) / g.areas.length;
+
+    // Find threshold matching State, Cluster, District, Crop
+    const term = AppState.threshRows.find(t => 
+      t.State === g.State && 
+      t.Cluster === g.Cluster && 
+      t.District === g.District && 
+      t.Crop === g.Crop
+    );
+
+    const threshold = term ? term.Threshold : meanYield;
+    const sumInsured = term ? term.sum_insured_per_ha : 50000;
+    const capPct = term ? term.cap_default_pct : 1.0;
+    const totalSi = sumInsured * avgArea;
+
+    iuList.push({
+      ...g,
+      meanYield,
+      stdYield,
+      avgArea,
+      threshold,
+      sumInsured,
+      capPct,
+      totalSi
+    });
+  }
+
+  // 2. Vectorized Monte Carlo across all IUs and Sims
+  // For each IU and sim, compute simulated payout
+  const numIUs = iuList.length;
+  // iuPayouts[iuIdx][simIdx]
+  const iuPayouts = new Array(numIUs);
+
+  for (let i = 0; i < numIUs; i++) {
+    const iu = iuList[i];
+    iuPayouts[i] = new Float64Array(nSims);
+    const maxPayPerHa = iu.sumInsured * iu.capPct;
+
+    for (let s = 0; s < nSims; s++) {
+      const z = generateGaussian();
+      const simYield = Math.max(0, iu.meanYield + z * iu.stdYield);
+      let payRatio = (iu.threshold * indemnityFactor - simYield) / iu.threshold;
+      payRatio = Math.max(0, Math.min(1, payRatio));
+      
+      let payout = Math.min(payRatio * iu.sumInsured, maxPayPerHa) * iu.avgArea;
+      iuPayouts[i][s] = payout;
+    }
+  }
+
+  // 3. Hierarchical Aggregation to District Level
+  const distMap = {};
+  iuList.forEach((iu, idx) => {
+    const key = `${iu.State}|${iu.Cluster}|${iu.District}`;
+    if (!distMap[key]) {
+      distMap[key] = {
+        State: iu.State,
+        Cluster: iu.Cluster,
+        District: iu.District,
+        totalSi: 0,
+        simPayouts: new Float64Array(nSims)
+      };
+    }
+    distMap[key].totalSi += iu.totalSi;
+    for (let s = 0; s < nSims; s++) {
+      distMap[key].simPayouts[s] += iuPayouts[idx][s];
+    }
+  });
+
+  const districtSummary = [];
+  for (const k in distMap) {
+    const d = distMap[k];
+    const burnRates = new Float64Array(nSims);
+    let sumPay = 0;
+    for (let s = 0; s < nSims; s++) {
+      sumPay += d.simPayouts[s];
+      burnRates[s] = d.simPayouts[s] / d.totalSi;
+    }
+    const avgPayout = sumPay / nSims;
+    const meanBurn = avgPayout / d.totalSi;
+
+    // Variance
+    let sumSq = 0;
+    for (let s = 0; s < nSims; s++) {
+      sumSq += Math.pow(burnRates[s] - meanBurn, 2);
+    }
+    const burnSd = Math.sqrt(sumSq / (nSims - 1));
+    const cv = meanBurn > 0 ? (burnSd / meanBurn) : 0;
+
+    const p50 = quantile(burnRates, 0.50);
+    const p90 = quantile(burnRates, 0.90);
+    const p95 = quantile(burnRates, 0.95);
+
+    districtSummary.push({
+      State: d.State,
+      Cluster: d.Cluster,
+      District: d.District,
+      totalSi: d.totalSi,
+      avgPayout: avgPayout,
+      burnRate: meanBurn,
+      burnSd: burnSd,
+      cv: cv,
+      p50: p50,
+      p90: p90,
+      p95: p95,
+      simPayouts: d.simPayouts
+    });
+  }
+
+  // 4. Hierarchical Aggregation to Cluster Level
+  const clustMap = {};
+  districtSummary.forEach(d => {
+    const key = `${d.State}|${d.Cluster}`;
+    if (!clustMap[key]) {
+      clustMap[key] = {
+        State: d.State,
+        Cluster: d.Cluster,
+        totalSi: 0,
+        simPayouts: new Float64Array(nSims)
+      };
+    }
+    clustMap[key].totalSi += d.totalSi;
+    for (let s = 0; s < nSims; s++) {
+      clustMap[key].simPayouts[s] += d.simPayouts[s];
+    }
+  });
+
+  const clusterSummary = [];
+  for (const k in clustMap) {
+    const c = clustMap[k];
+    const burnRates = new Float64Array(nSims);
+    let sumPay = 0;
+    for (let s = 0; s < nSims; s++) {
+      sumPay += c.simPayouts[s];
+      burnRates[s] = c.simPayouts[s] / c.totalSi;
+    }
+    const avgPayout = sumPay / nSims;
+    const meanBurn = avgPayout / c.totalSi;
+
+    let paySq = 0;
+    for (let s = 0; s < nSims; s++) {
+      paySq += Math.pow(c.simPayouts[s] - avgPayout, 2);
+    }
+    const stdPayout = Math.sqrt(paySq / (nSims - 1));
+    const cvPayout = avgPayout > 0 ? (stdPayout / avgPayout) : NaN;
+
+    let sumSq = 0;
+    for (let s = 0; s < nSims; s++) {
+      sumSq += Math.pow(burnRates[s] - meanBurn, 2);
+    }
+    const burnSd = Math.sqrt(sumSq / (nSims - 1));
+    const cv = meanBurn > 0 ? (burnSd / meanBurn) : NaN;
+
+    const p50 = quantile(burnRates, 0.50);
+    const p90 = quantile(burnRates, 0.90);
+    const p95 = quantile(burnRates, 0.95);
+
+    clusterSummary.push({
+      State: c.State,
+      Cluster: c.Cluster,
+      totalSi: c.totalSi,
+      avgPayout: avgPayout,
+      stdPayout: stdPayout,
+      cvPayout: cvPayout,
+      burnRate: meanBurn,
+      burnSd: burnSd,
+      cv: cv,
+      p50: p50,
+      p90: p90,
+      p95: p95,
+      simPayouts: c.simPayouts,
+      burnRates: burnRates
+    });
+  }
+
+  // Sort clusters and rank
+  clusterSummary.sort((a, b) => a.Cluster.localeCompare(b.Cluster));
+  // Stability rank (lower CV = rank 1)
+  const rankedCv = clusterSummary.slice().sort((a, b) => a.cv - b.cv);
+  rankedCv.forEach((c, idx) => c.stabilityRank = idx + 1);
+
+  // Store in state
+  AppState.results.districtSummary = districtSummary;
+  AppState.results.clusterSummary = clusterSummary;
+
+  renderAll();
+  showToast("Monte Carlo simulation completed successfully!");
+}
+
+/**
+ * UI RENDERING FUNCTIONS
+ */
+function renderAll() {
+  renderKPIs();
+  renderClusterTable();
+  renderDistrictTable();
+  renderCharts();
+  populateCompareDropdowns();
+  renderComparison();
+  renderStabilityTab();
+}
+
+function formatCr(val) {
+  return "₹ " + (val / 10000000).toLocaleString('en-IN', { maximumFractionDigits: 1 }) + " Cr";
+}
+
+function formatPct(val) {
+  return (val * 100).toFixed(2) + "%";
+}
+
+function renderKPIs() {
+  const clusts = AppState.results.clusterSummary;
+  if (!clusts || clusts.length === 0) return;
+
+  const totalSi = clusts.reduce((a, b) => a + b.totalSi, 0);
+  const totalPayout = clusts.reduce((a, b) => a + b.avgPayout, 0);
+  const overallBurn = totalPayout / totalSi;
+
+  // Portfolio burn rate across sims
+  const nSims = AppState.nSims;
+  const portfolioBurnRates = new Float64Array(nSims);
+  for (let s = 0; s < nSims; s++) {
+    let simPay = 0;
+    clusts.forEach(c => simPay += c.simPayouts[s]);
+    portfolioBurnRates[s] = simPay / totalSi;
+  }
+  let sumSq = 0;
+  for (let s = 0; s < nSims; s++) {
+    sumSq += Math.pow(portfolioBurnRates[s] - overallBurn, 2);
+  }
+  const overallSd = Math.sqrt(sumSq / (nSims - 1));
+  const p95 = quantile(portfolioBurnRates, 0.95);
+
+  document.getElementById('kpiTotalSi').textContent = formatCr(totalSi);
+  document.getElementById('kpiBurnRate').textContent = formatPct(overallBurn);
+  document.getElementById('kpiBurnSd').textContent = formatPct(overallSd);
+  document.getElementById('kpiP95').textContent = formatPct(p95);
+  document.getElementById('kpiP95Amount').textContent = "Liability: " + formatCr(totalSi * p95);
+  document.getElementById('badgeSimCount').textContent = `Simulations: ${nSims.toLocaleString()}`;
+}
+
+function renderClusterTable() {
+  const tbody = document.getElementById('tbodyCluster');
+  tbody.innerHTML = '';
+  const clusts = AppState.results.clusterSummary;
+
+  clusts.forEach(c => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${c.Cluster}</strong></td>
+      <td>${formatCr(c.totalSi)}</td>
+      <td><span class="badge-pill">${formatPct(c.burnRate)}</span></td>
+      <td>${formatPct(c.burnSd)}</td>
+      <td><strong>${c.cv.toFixed(3)}</strong></td>
+      <td>${formatPct(c.p50)}</td>
+      <td><span class="badge-pill warning">${formatPct(c.p90)}</span></td>
+      <td><span class="badge-pill danger">${formatPct(c.p95)}</span></td>
+      <td>#${c.stabilityRank}</td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderDistrictTable() {
+  const tbody = document.getElementById('tbodyDistrict');
+  tbody.innerHTML = '';
+  const query = (document.getElementById('searchDistrict').value || '').toLowerCase();
+  const dists = AppState.results.districtSummary;
+
+  dists.filter(d => d.District.toLowerCase().includes(query) || d.Cluster.toLowerCase().includes(query))
+    .forEach(d => {
+      const tr = document.createElement('tr');
+      tr.innerHTML = `
+        <td><strong>${d.District}</strong></td>
+        <td>${d.Cluster}</td>
+        <td>${formatCr(d.totalSi)}</td>
+        <td>${formatPct(d.burnRate)}</td>
+        <td>${formatPct(d.burnSd)}</td>
+        <td>${d.cv > 0 ? d.cv.toFixed(3) : '-'}</td>
+        <td>${formatPct(d.p90)}</td>
+        <td>${formatPct(d.p95)}</td>
+      `;
+      tbody.appendChild(tr);
+    });
+}
+
+function getPlotlyLayout(title, extra = {}) {
+  const isDark = document.documentElement.getAttribute('data-theme') !== 'light';
+  return {
+    title: { text: title, font: { family: 'Outfit', size: 14, color: isDark ? '#f0fdf4' : '#064e3b' } },
+    paper_bgcolor: 'transparent',
+    plot_bgcolor: 'transparent',
+    font: { family: 'Inter', color: isDark ? '#a7f3d0' : '#047857' },
+    margin: { l: 45, r: 25, t: 40, b: 40 },
+    xaxis: { gridcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
+    yaxis: { gridcolor: isDark ? 'rgba(255,255,255,0.06)' : 'rgba(0,0,0,0.06)' },
+    legend: { orientation: 'h', y: -0.2 },
+    ...extra
+  };
+}
+
+function renderCharts() {
+  const clusts = AppState.results.clusterSummary;
+  if (!clusts || clusts.length === 0) return;
+
+  const names = clusts.map(c => c.Cluster);
+  const burnRates = clusts.map(c => c.burnRate * 100);
+  const burnSds = clusts.map(c => c.burnSd * 100);
+
+  // 1. Cluster Bar Chart: Mean Burn Rate vs Volatility SD
+  const trace1 = {
+    x: names,
+    y: burnRates,
+    name: 'Expected Burn Rate (%)',
+    type: 'bar',
+    marker: { color: '#10b981' }
+  };
+  const trace2 = {
+    x: names,
+    y: burnSds,
+    name: 'Volatility SD (%)',
+    type: 'bar',
+    marker: { color: '#38bdf8' }
+  };
+
+  Plotly.newPlot('chartClusterBar', [trace1, trace2], getPlotlyLayout('Burn Rate & Volatility by Cluster', { barmode: 'group' }), { responsive: true, displayModeBar: false });
+
+  // 2. Tail Risk Chart: P50 vs P90 vs P95
+  const traceP50 = {
+    x: names,
+    y: clusts.map(c => c.p50 * 100),
+    name: 'P50 (Median)',
+    type: 'bar',
+    marker: { color: '#34d399' }
+  };
+  const traceP90 = {
+    x: names,
+    y: clusts.map(c => c.p90 * 100),
+    name: 'P90 (1-in-10 Yr)',
+    type: 'bar',
+    marker: { color: '#f59e0b' }
+  };
+  const traceP95 = {
+    x: names,
+    y: clusts.map(c => c.p95 * 100),
+    name: 'P95 (1-in-20 Yr Tail)',
+    type: 'bar',
+    marker: { color: '#ef4444' }
+  };
+
+  Plotly.newPlot('chartTailRisk', [traceP50, traceP90, traceP95], getPlotlyLayout('Tail Risk Scenarios (% of Sum Insured)', { barmode: 'group' }), { responsive: true, displayModeBar: false });
+}
+
+function populateCompareDropdowns() {
+  const selA = document.getElementById('selClusterA');
+  const selB = document.getElementById('selClusterB');
+  const clusts = AppState.results.clusterSummary;
+  if (!clusts || clusts.length === 0) return;
+
+  const currentA = selA.value;
+  const currentB = selB.value;
+
+  selA.innerHTML = '';
+  selB.innerHTML = '';
+
+  clusts.forEach((c, idx) => {
+    selA.appendChild(new Option(c.Cluster, c.Cluster, false, idx === 0));
+    selB.appendChild(new Option(c.Cluster, c.Cluster, false, idx === Math.min(1, clusts.length - 1)));
+  });
+
+  if (currentA) selA.value = currentA;
+  if (currentB) selB.value = currentB;
+}
+
+function renderComparison() {
+  const clusts = AppState.results.clusterSummary;
+  const nameA = document.getElementById('selClusterA').value || (clusts[0] ? clusts[0].Cluster : '');
+  const nameB = document.getElementById('selClusterB').value || (clusts[1] ? clusts[1].Cluster : '');
+
+  const cA = clusts.find(c => c.Cluster === nameA);
+  const cB = clusts.find(c => c.Cluster === nameB);
+  if (!cA || !cB) return;
+
+  document.getElementById('thClusterA').textContent = cA.Cluster;
+  document.getElementById('thClusterB').textContent = cB.Cluster;
+
+  // Comparison Bar Chart
+  const categories = ['Burn Rate (%)', 'Volatility SD (%)', 'CV (x100)', 'P90 VaR (%)', 'P95 VaR (%)'];
+  const valsA = [cA.burnRate * 100, cA.burnSd * 100, cA.cv * 100, cA.p90 * 100, cA.p95 * 100];
+  const valsB = [cB.burnRate * 100, cB.burnSd * 100, cB.cv * 100, cB.p90 * 100, cB.p95 * 100];
+
+  const tA = { x: categories, y: valsA, name: cA.Cluster, type: 'bar', marker: { color: '#10b981' } };
+  const tB = { x: categories, y: valsB, name: cB.Cluster, type: 'bar', marker: { color: '#0ea5e9' } };
+  Plotly.newPlot('chartCompareBars', [tA, tB], getPlotlyLayout(`${cA.Cluster} vs ${cB.Cluster} Metrics`, { barmode: 'group' }), { responsive: true, displayModeBar: false });
+
+  // Distribution Overlay
+  const distA = {
+    x: Array.from(cA.burnRates).map(v => v * 100),
+    type: 'histogram',
+    name: cA.Cluster,
+    opacity: 0.6,
+    marker: { color: '#10b981' }
+  };
+  const distB = {
+    x: Array.from(cB.burnRates).map(v => v * 100),
+    type: 'histogram',
+    name: cB.Cluster,
+    opacity: 0.6,
+    marker: { color: '#0ea5e9' }
+  };
+  Plotly.newPlot('chartCompareDist', [distA, distB], getPlotlyLayout('Simulated Loss Distribution Overlay (% Burn Rate)', { barmode: 'overlay', xaxis: { title: 'Burn Rate (%)' }, yaxis: { title: 'Scenario Count' } }), { responsive: true, displayModeBar: false });
+
+  // Comparison Table Rows
+  const tbody = document.getElementById('tbodyCompareDirect');
+  tbody.innerHTML = '';
+  const rows = [
+    { label: 'Total Sum Insured', valA: formatCr(cA.totalSi), valB: formatCr(cB.totalSi), delta: formatCr(Math.abs(cA.totalSi - cB.totalSi)) },
+    { label: 'Expected Burn Rate', valA: formatPct(cA.burnRate), valB: formatPct(cB.burnRate), delta: ((cA.burnRate - cB.burnRate) * 100).toFixed(2) + ' %pts' },
+    { label: 'Burn Rate Volatility (SD)', valA: formatPct(cA.burnSd), valB: formatPct(cB.burnSd), delta: ((cA.burnSd - cB.burnSd) * 100).toFixed(2) + ' %pts' },
+    { label: 'Coefficient of Variation (CV)', valA: cA.cv.toFixed(3), valB: cB.cv.toFixed(3), delta: (cA.cv - cB.cv).toFixed(3) },
+    { label: 'P90 Worst Case (1-in-10 Yr)', valA: formatPct(cA.p90), valB: formatPct(cB.p90), delta: ((cA.p90 - cB.p90) * 100).toFixed(2) + ' %pts' },
+    { label: 'P95 Tail Risk (1-in-20 Yr)', valA: formatPct(cA.p95), valB: formatPct(cB.p95), delta: ((cA.p95 - cB.p95) * 100).toFixed(2) + ' %pts' },
+    { label: 'Expected Total Payout (Mean)', valA: formatCr(cA.avgPayout), valB: formatCr(cB.avgPayout), delta: formatCr(Math.abs(cA.avgPayout - cB.avgPayout)) }
+  ];
+
+  rows.forEach(r => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td><strong>${r.label}</strong></td>
+      <td>${r.valA}</td>
+      <td>${r.valB}</td>
+      <td><code>${r.delta}</code></td>
+    `;
+    tbody.appendChild(tr);
+  });
+}
+
+function renderStabilityTab() {
+  const clusts = AppState.results.clusterSummary;
+  if (!clusts || clusts.length < 2) return;
+
+  // 1. Calculate pairwise combinations
+  const combos = [];
+  const nSims = AppState.nSims;
+
+  for (let i = 0; i < clusts.length; i++) {
+    for (let j = i + 1; j < clusts.length; j++) {
+      const c1 = clusts[i];
+      const c2 = clusts[j];
+      const combinedSi = c1.totalSi + c2.totalSi;
+      const combinedBurnRates = new Float64Array(nSims);
+      let combinedPay = 0;
+      for (let s = 0; s < nSims; s++) {
+        const pay = c1.simPayouts[s] + c2.simPayouts[s];
+        combinedPay += pay;
+        combinedBurnRates[s] = pay / combinedSi;
+      }
+      const meanBurn = combinedPay / (combinedSi * nSims);
+      let sumSq = 0;
+      for (let s = 0; s < nSims; s++) {
+        sumSq += Math.pow(combinedBurnRates[s] - meanBurn, 2);
+      }
+      const sd = Math.sqrt(sumSq / (nSims - 1));
+      const cv = meanBurn > 0 ? (sd / meanBurn) : 0;
+      const avgIndividualCv = (c1.cv + c2.cv) / 2.0;
+      const benefitPct = avgIndividualCv > 0 ? ((avgIndividualCv - cv) / avgIndividualCv * 100) : 0;
+
+      combos.push({
+        name: `${c1.Cluster} + ${c2.Cluster}`,
+        totalSi: combinedSi,
+        meanBurn: meanBurn,
+        sd: sd,
+        cv: cv,
+        benefit: benefitPct
+      });
+    }
+  }
+
+  // Top combinations replicating find_top_combinations(cluster_summary) from crop_risk_backend1.py
+  const streamlitCombos = [];
+  for (let i = 0; i < clusts.length; i++) {
+    for (let j = i + 1; j < clusts.length; j++) {
+      const c1 = clusts[i];
+      const c2 = clusts[j];
+      const comboBurn = (c1.burnRate + c2.burnRate) / 2.0;
+      let comboCv = NaN;
+      if (!isNaN(c1.cvPayout) && !isNaN(c2.cvPayout)) {
+        comboCv = (c1.cvPayout + c2.cvPayout) / 2.0;
+      } else if (!isNaN(c1.cvPayout)) {
+        comboCv = c1.cvPayout;
+      } else if (!isNaN(c2.cvPayout)) {
+        comboCv = c2.cvPayout;
+      }
+      streamlitCombos.push({
+        combo: `${c1.Cluster} + ${c2.Cluster}`,
+        meanBurn: comboBurn,
+        cv: comboCv
+      });
+    }
+  }
+  streamlitCombos.sort((a, b) => {
+    if (isNaN(a.cv)) return 1;
+    if (isNaN(b.cv)) return -1;
+    return a.cv - b.cv;
+  });
+
+  // Table
+  const tbody = document.getElementById('tbodyCombos');
+  tbody.innerHTML = '';
+  streamlitCombos.forEach((c, idx) => {
+    const tr = document.createElement('tr');
+    tr.innerHTML = `
+      <td>#${idx + 1}</td>
+      <td><strong>${c.combo}</strong></td>
+      <td>${(c.meanBurn * 100).toFixed(4)}% (${c.meanBurn.toFixed(5)})</td>
+      <td><strong>${isNaN(c.cv) ? 'NaN' : c.cv.toFixed(4)}</strong></td>
+      <td><span class="badge-pill">${isNaN(c.cv) ? 'Zero Variance' : 'Ranked #' + (idx + 1)}</span></td>
+    `;
+    tbody.appendChild(tr);
+  });
+
+  // Chart 1: Risk Return Frontier (Burn Rate vs CV)
+  const scatterTraces = clusts.map(c => ({
+    x: [c.cv],
+    y: [c.burnRate * 100],
+    mode: 'markers+text',
+    text: [c.Cluster],
+    textposition: 'top center',
+    name: c.Cluster,
+    marker: { size: 14, color: '#10b981' }
+  }));
+
+  // Add combinations as open markers
+  scatterTraces.push({
+    x: combos.map(cb => cb.cv),
+    y: combos.map(cb => cb.meanBurn * 100),
+    mode: 'markers+text',
+    text: combos.map(cb => cb.name),
+    textposition: 'bottom right',
+    name: 'Pairwise Portfolios',
+    marker: { size: 10, color: '#f59e0b', symbol: 'diamond' }
+  });
+
+  Plotly.newPlot('chartRiskReturn', scatterTraces, getPlotlyLayout('Risk-Return Space (Burn Rate % vs CV)', {
+    xaxis: { title: 'Risk: Coefficient of Variation (CV)' },
+    yaxis: { title: 'Expected Burn Rate (%)' }
+  }), { responsive: true, displayModeBar: false });
+
+  // Chart 2: Top Combos CV
+  const topCombos = combos.slice(0, 5);
+  const barCombo = {
+    x: topCombos.map(cb => cb.name),
+    y: topCombos.map(cb => cb.cv),
+    type: 'bar',
+    marker: { color: '#38bdf8' }
+  };
+  Plotly.newPlot('chartTopCombos', [barCombo], getPlotlyLayout('Cluster Combinations Ranked by Volatility (CV)', {
+    yaxis: { title: 'Portfolio CV (Lower is More Stable)' }
+  }), { responsive: true, displayModeBar: false });
+}
+
+function showToast(msg) {
+  const toast = document.getElementById('toast');
+  toast.textContent = msg;
+  toast.classList.add('show');
+  setTimeout(() => toast.classList.remove('show'), 3000);
+}
+
+function exportTableToCSV(tableId, filename) {
+  const table = document.getElementById(tableId);
+  const rows = Array.from(table.querySelectorAll('tr'));
+  const csvContent = rows.map(r => {
+    const cols = Array.from(r.querySelectorAll('th, td'));
+    return cols.map(c => `"${c.textContent.replace(/"/g, '""').trim()}"`).join(',');
+  }).join('\n');
+
+  const blob = new Blob([csvContent], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.setAttribute('download', filename);
+  link.click();
+}
+
+/**
+ * CSV UPLOAD HANDLERS
+ */
+function parseCsvText(text) {
+  const lines = text.trim().split(/\r?\n/).filter(l => l.trim() !== '');
+  if (lines.length < 2) return [];
+  const headers = lines[0].split(',').map(h => h.trim().replace(/^"|"$/g, ''));
+  return lines.slice(1).map(line => {
+    // simple csv parser handling commas
+    const vals = line.split(',').map(v => v.trim().replace(/^"|"$/g, ''));
+    let row = {};
+    headers.forEach((h, idx) => row[h] = vals[idx]);
+    return row;
+  });
+}
+
+function handleYieldUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      const parsed = parseCsvText(evt.target.result);
+      if (parsed.length > 0) {
+        AppState.yieldRows = parsed.map(obj => ({
+          State: String(obj.State || '').trim(),
+          Cluster: String(obj.Cluster || '').trim(),
+          District: String(obj.District || '').trim(),
+          Tehsil: String(obj.Tehsil || '').trim(),
+          IU_id: String(obj.IU_id || '').trim(),
+          Crop: String(obj.Crop || '').trim(),
+          year: parseInt(obj.year, 10) || 2020,
+          Yield_kg_ha: parseFloat(obj.Yield_kg_ha) || 0,
+          area: parseFloat(obj.area) || 1.0
+        }));
+        document.getElementById('statusYield').textContent = `✓ Uploaded: ${file.name} (${parsed.length} rows)`;
+        showToast("Yield file loaded successfully!");
+      }
+    } catch (err) {
+      alert("Error parsing Yield CSV: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+function handleThreshUpload(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+  const reader = new FileReader();
+  reader.onload = function(evt) {
+    try {
+      const parsed = parseCsvText(evt.target.result);
+      if (parsed.length > 0) {
+        AppState.threshRows = parsed.map(obj => {
+          let cap = obj.cap_default_pct;
+          let capVal = (cap !== '' && cap !== null && cap !== undefined) ? parseFloat(cap) : 100.0;
+          return {
+            State: String(obj.State || '').trim(),
+            Cluster: String(obj.Cluster || '').trim(),
+            District: String(obj.District || '').trim(),
+            Crop: String(obj.Crop || '').trim(),
+            Threshold: parseFloat(obj.Threshold) || 0,
+            sum_insured_per_ha: parseFloat(obj.sum_insured_per_ha) || 0,
+            cap_default_pct: capVal / 100.0
+          };
+        });
+        document.getElementById('statusThresh').textContent = `✓ Uploaded: ${file.name} (${parsed.length} rows)`;
+        showToast("Threshold file loaded successfully!");
+      }
+    } catch (err) {
+      alert("Error parsing Threshold CSV: " + err.message);
+    }
+  };
+  reader.readAsText(file);
+}
+
+/**
+ * EVENT LISTENERS SETUP
+ */
+document.addEventListener('DOMContentLoaded', () => {
+  initData();
+
+  // Navigation Tabs
+  const tabs = document.querySelectorAll('.nav-tab');
+  const panes = document.querySelectorAll('.tab-pane');
+  tabs.forEach(tab => {
+    tab.addEventListener('click', () => {
+      tabs.forEach(t => t.classList.remove('active'));
+      panes.forEach(p => p.classList.remove('active'));
+      tab.classList.add('active');
+      const target = document.getElementById(tab.getAttribute('data-tab'));
+      if (target) target.classList.add('active');
+      setTimeout(() => window.dispatchEvent(new Event('resize')), 50);
+    });
+  });
+
+  // Slider Sims
+  const sliderSims = document.getElementById('sliderSims');
+  const valSims = document.getElementById('valSims');
+  sliderSims.addEventListener('input', e => {
+    AppState.nSims = parseInt(e.target.value, 10);
+    valSims.textContent = AppState.nSims.toLocaleString();
+  });
+
+  // Presets
+  document.querySelectorAll('.btn-preset').forEach(btn => {
+    btn.addEventListener('click', () => {
+      document.querySelectorAll('.btn-preset').forEach(b => b.classList.remove('active'));
+      btn.classList.add('active');
+      const sims = parseInt(btn.getAttribute('data-sims'), 10);
+      sliderSims.value = sims;
+      AppState.nSims = sims;
+      valSims.textContent = sims.toLocaleString();
+    });
+  });
+
+  // Slider Indemnity (Matches Streamlit indemnity = slider_val / 100)
+  const sliderIndemnity = document.getElementById('sliderIndemnity');
+  const valIndemnity = document.getElementById('valIndemnity');
+  const subIndemnity = document.getElementById('subIndemnity');
+
+  function updateIndemnityUI(val) {
+    sliderIndemnity.value = val;
+    valIndemnity.textContent = val + "%";
+    AppState.indemnity = val / 100.0;
+    const factor = (1.0 - AppState.indemnity).toFixed(2);
+    if (subIndemnity) {
+      subIndemnity.textContent = `Indemnity factor = (1.0 - ${val}%) = ${factor} (Matches Streamlit)`;
+    }
+    document.querySelectorAll('[data-indemnity]').forEach(b => {
+      b.classList.toggle('active', parseInt(b.getAttribute('data-indemnity'), 10) === val);
+    });
+  }
+
+  sliderIndemnity.addEventListener('input', e => {
+    updateIndemnityUI(parseInt(e.target.value, 10));
+  });
+
+  document.querySelectorAll('[data-indemnity]').forEach(btn => {
+    btn.addEventListener('click', () => {
+      const val = parseInt(btn.getAttribute('data-indemnity'), 10);
+      updateIndemnityUI(val);
+      runSimulation();
+    });
+  });
+
+  // File Uploads
+  document.getElementById('fileYield').addEventListener('change', handleYieldUpload);
+  document.getElementById('fileThresh').addEventListener('change', handleThreshUpload);
+
+  // Reset sample button
+  document.getElementById('btnResetSample').addEventListener('click', () => {
+    initData();
+    document.getElementById('statusYield').textContent = "✓ Sample Data Loaded (300 IU Records)";
+    document.getElementById('statusThresh').textContent = "✓ Sample Terms Loaded (9 Contracts)";
+    runSimulation();
+  });
+
+  // Run Simulation Button
+  document.getElementById('btnRunSimulation').addEventListener('click', runSimulation);
+
+  // Search District
+  document.getElementById('searchDistrict').addEventListener('input', renderDistrictTable);
+
+  // Cluster comparison selectors
+  document.getElementById('selClusterA').addEventListener('change', renderComparison);
+  document.getElementById('selClusterB').addEventListener('change', renderComparison);
+
+  // Presentation Toggle
+  document.getElementById('btnPresToggle').addEventListener('click', () => {
+    document.body.classList.toggle('presentation-mode');
+    setTimeout(() => window.dispatchEvent(new Event('resize')), 100);
+  });
+
+  // Theme Toggle
+  document.getElementById('btnThemeToggle').addEventListener('click', () => {
+    const curr = document.documentElement.getAttribute('data-theme');
+    const next = curr === 'light' ? 'dark' : 'light';
+    document.documentElement.setAttribute('data-theme', next);
+    AppState.theme = next;
+    renderCharts();
+    renderComparison();
+    renderStabilityTab();
+  });
+
+  // Export CSV
+  document.getElementById('btnExportClusterCsv').addEventListener('click', () => {
+    exportTableToCSV('tblCluster', 'pmfby_cluster_summary.csv');
+  });
+
+  // Initial Run
+  runSimulation();
+});
+</script>
+</body>
+</html>

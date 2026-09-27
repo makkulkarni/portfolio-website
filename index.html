@@ -1,0 +1,1445 @@
+<!DOCTYPE html>
+<html lang="en" data-theme="dark">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Makarand A. Kulkarni, Ph.D. | Climate Science, Environmental Risk &amp; Actuarial Analytics</title>
+  <meta name="description" content="Portfolio of Makarand A. Kulkarni, Ph.D. — Chief Product Officer &amp; Atmospheric Scientist specializing in Climate Science, ESG &amp; Carbon Accounting, Parametric Insurance, PMFBY Actuarial Analytics, and Reinsurance Modeling.">
+  
+  <!-- Google Fonts: Outfit & Inter -->
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@400;500;600;700;800;900&display=swap" rel="stylesheet">
+  
+  <style>
+    :root {
+      --bg-gradient: radial-gradient(circle at 10% 20%, #080e1a 0%, #03060d 100%);
+      --surface-bg: rgba(14, 23, 42, 0.85);
+      --surface-card: rgba(18, 29, 52, 0.75);
+      --surface-border: rgba(255, 255, 255, 0.08);
+      --surface-hover: rgba(26, 41, 74, 0.9);
+      
+      --text-primary: #f8fafc;
+      --text-secondary: #94a3b8;
+      --text-muted: #64748b;
+      --text-dim: #475569;
+      
+      --brand-primary: #10b981;
+      --brand-accent: #38bdf8;
+      --brand-glow: rgba(56, 189, 248, 0.3);
+      --brand-indigo: #6366f1;
+      --brand-purple: #8b5cf6;
+      --brand-gold: #f59e0b;
+      
+      --radius-sm: 8px;
+      --radius-md: 14px;
+      --radius-lg: 20px;
+      --radius-xl: 28px;
+      --shadow-sm: 0 4px 6px -1px rgba(0, 0, 0, 0.25);
+      --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.4);
+      --shadow-lg: 0 20px 45px -10px rgba(0, 0, 0, 0.6);
+      --transition-base: all 0.28s cubic-bezier(0.4, 0, 0.2, 1);
+    }
+
+    [data-theme="light"] {
+      --bg-gradient: linear-gradient(135deg, #f8fafc 0%, #f1f5f9 50%, #e2e8f0 100%);
+      --surface-bg: rgba(255, 255, 255, 0.95);
+      --surface-card: rgba(255, 255, 255, 0.92);
+      --surface-border: rgba(226, 232, 240, 0.9);
+      --surface-hover: rgba(248, 250, 252, 1);
+      
+      --text-primary: #0f172a;
+      --text-secondary: #475569;
+      --text-muted: #64748b;
+      --text-dim: #94a3b8;
+      
+      --brand-primary: #059669;
+      --brand-accent: #0284c7;
+      --brand-glow: rgba(2, 132, 199, 0.2);
+      --shadow-md: 0 10px 25px -5px rgba(0, 0, 0, 0.08);
+      --shadow-lg: 0 20px 45px -10px rgba(0, 0, 0, 0.12);
+    }
+
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    html {
+      scroll-behavior: smooth;
+    }
+
+    body {
+      font-family: 'Inter', -apple-system, BlinkMacSystemFont, sans-serif;
+      background: var(--bg-gradient);
+      color: var(--text-primary);
+      min-height: 100vh;
+      line-height: 1.6;
+      overflow-x: hidden;
+      transition: background 0.3s ease, color 0.3s ease;
+    }
+
+    /* Container */
+    .container {
+      max-width: 1240px;
+      margin: 0 auto;
+      padding: 0 24px;
+    }
+
+    /* Header Nav */
+    .navbar {
+      height: 76px;
+      background: var(--surface-bg);
+      backdrop-filter: blur(16px);
+      -webkit-backdrop-filter: blur(16px);
+      border-bottom: 1px solid var(--surface-border);
+      position: sticky;
+      top: 0;
+      z-index: 50;
+      transition: var(--transition-base);
+    }
+
+    .nav-inner {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      height: 100%;
+    }
+
+    .nav-brand {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .brand-avatar {
+      width: 42px;
+      height: 42px;
+      border-radius: 50%;
+      background: linear-gradient(135deg, var(--brand-primary) 0%, var(--brand-accent) 100%);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-family: 'Outfit', sans-serif;
+      font-weight: 800;
+      font-size: 1.1rem;
+      color: white;
+      box-shadow: 0 4px 12px var(--brand-glow);
+    }
+
+    .brand-meta {
+      display: flex;
+      flex-direction: column;
+    }
+
+    .brand-name {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.05rem;
+      line-height: 1.2;
+      color: var(--text-primary);
+    }
+
+    .brand-title {
+      font-size: 0.72rem;
+      color: var(--brand-accent);
+      text-transform: uppercase;
+      font-weight: 600;
+      letter-spacing: 0.05em;
+    }
+
+    .nav-menu {
+      display: flex;
+      align-items: center;
+      gap: 24px;
+      list-style: none;
+    }
+
+    .nav-link {
+      color: var(--text-secondary);
+      text-decoration: none;
+      font-size: 0.9rem;
+      font-weight: 500;
+      transition: var(--transition-base);
+      display: flex;
+      align-items: center;
+      gap: 6px;
+    }
+
+    .nav-link:hover {
+      color: var(--brand-accent);
+    }
+
+    .nav-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+    }
+
+    .icon-btn {
+      width: 38px;
+      height: 38px;
+      border-radius: 50%;
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--surface-border);
+      color: var(--text-secondary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      cursor: pointer;
+      font-size: 1.05rem;
+      transition: var(--transition-base);
+      text-decoration: none;
+    }
+
+    .icon-btn:hover {
+      background: rgba(255, 255, 255, 0.12);
+      color: var(--brand-accent);
+      border-color: var(--brand-accent);
+      transform: translateY(-2px);
+    }
+
+    /* Hero Section */
+    .hero {
+      padding: 72px 0 54px;
+      position: relative;
+    }
+
+    .hero-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      padding: 6px 14px;
+      border-radius: 30px;
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--brand-primary);
+      font-size: 0.82rem;
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+
+    .hero-badge-pulse {
+      width: 8px;
+      height: 8px;
+      border-radius: 50%;
+      background: var(--brand-primary);
+      box-shadow: 0 0 10px var(--brand-primary);
+      animation: pulse 2s infinite;
+    }
+
+    @keyframes pulse {
+      0% { opacity: 0.6; transform: scale(0.9); }
+      50% { opacity: 1; transform: scale(1.2); }
+      100% { opacity: 0.6; transform: scale(0.9); }
+    }
+
+    .hero-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 3.4rem;
+      font-weight: 900;
+      letter-spacing: -0.04em;
+      line-height: 1.15;
+      margin-bottom: 14px;
+      background: linear-gradient(135deg, var(--text-primary) 30%, var(--brand-accent) 100%);
+      -webkit-background-clip: text;
+      -webkit-text-fill-color: transparent;
+    }
+
+    .hero-tagline {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 600;
+      color: var(--brand-accent);
+      letter-spacing: -0.01em;
+      margin-bottom: 18px;
+    }
+
+    .hero-bio {
+      font-size: 1.05rem;
+      color: var(--text-secondary);
+      max-width: 860px;
+      line-height: 1.7;
+      margin-bottom: 32px;
+    }
+
+    .hero-cta-row {
+      display: flex;
+      align-items: center;
+      gap: 16px;
+      flex-wrap: wrap;
+      margin-bottom: 48px;
+    }
+
+    .btn-primary {
+      background: linear-gradient(135deg, var(--brand-accent) 0%, var(--brand-indigo) 100%);
+      color: #ffffff;
+      padding: 13px 26px;
+      border-radius: var(--radius-md);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 0.95rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 10px;
+      box-shadow: 0 6px 20px var(--brand-glow);
+      transition: var(--transition-base);
+      border: none;
+      cursor: pointer;
+    }
+
+    .btn-primary:hover {
+      transform: translateY(-2px);
+      box-shadow: 0 10px 28px var(--brand-glow);
+    }
+
+    .btn-secondary {
+      background: rgba(255, 255, 255, 0.05);
+      border: 1px solid var(--surface-border);
+      color: var(--text-primary);
+      padding: 13px 24px;
+      border-radius: var(--radius-md);
+      font-family: 'Outfit', sans-serif;
+      font-weight: 600;
+      font-size: 0.95rem;
+      text-decoration: none;
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      transition: var(--transition-base);
+    }
+
+    .btn-secondary:hover {
+      background: rgba(255, 255, 255, 0.1);
+      border-color: var(--brand-accent);
+      color: var(--brand-accent);
+      transform: translateY(-2px);
+    }
+
+    /* Stats Grid */
+    .stats-ribbon {
+      display: grid;
+      grid-template-columns: repeat(4, 1fr);
+      gap: 18px;
+      padding-top: 32px;
+      border-top: 1px solid var(--surface-border);
+    }
+
+    @media (max-width: 900px) {
+      .hero-title { font-size: 2.5rem; }
+      .stats-ribbon { grid-template-columns: repeat(2, 1fr); }
+    }
+
+    .stat-box {
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      padding: 18px 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 4px;
+    }
+
+    .stat-number {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      color: var(--brand-accent);
+      line-height: 1;
+    }
+
+    .stat-label {
+      font-size: 0.8rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      font-weight: 600;
+    }
+
+    /* Section Headers */
+    .section {
+      padding: 72px 0;
+    }
+
+    .section-header {
+      margin-bottom: 40px;
+    }
+
+    .section-kicker {
+      font-size: 0.8rem;
+      text-transform: uppercase;
+      letter-spacing: 0.08em;
+      color: var(--brand-primary);
+      font-weight: 700;
+      margin-bottom: 6px;
+    }
+
+    .section-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 2.2rem;
+      font-weight: 800;
+      letter-spacing: -0.03em;
+      margin-bottom: 10px;
+    }
+
+    .section-subtitle {
+      color: var(--text-secondary);
+      font-size: 1.05rem;
+      max-width: 760px;
+    }
+
+    /* 4 DOMAIN PILLARS (Matching User Diagram) */
+    .pillars-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 22px;
+      margin-bottom: 24px;
+    }
+
+    @media (max-width: 768px) {
+      .pillars-grid { grid-template-columns: 1fr; }
+    }
+
+    .pillar-card {
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-lg);
+      padding: 28px;
+      display: flex;
+      gap: 20px;
+      align-items: flex-start;
+      transition: var(--transition-base);
+      cursor: pointer;
+      text-decoration: none;
+      color: inherit;
+    }
+
+    .pillar-card:hover {
+      transform: translateY(-4px);
+      box-shadow: var(--shadow-lg);
+      border-color: var(--brand-accent);
+      background: var(--surface-hover);
+    }
+
+    .pillar-icon-box {
+      width: 52px;
+      height: 52px;
+      border-radius: var(--radius-md);
+      background: rgba(16, 185, 129, 0.12);
+      border: 1px solid rgba(16, 185, 129, 0.3);
+      color: var(--brand-primary);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 1.6rem;
+      flex-shrink: 0;
+    }
+
+    .pillar-card.pillar-esg .pillar-icon-box {
+      background: rgba(20, 184, 166, 0.12);
+      border-color: rgba(20, 184, 166, 0.3);
+      color: #14b8a6;
+    }
+
+    .pillar-card.pillar-risk .pillar-icon-box {
+      background: rgba(99, 102, 241, 0.12);
+      border-color: rgba(99, 102, 241, 0.3);
+      color: var(--brand-indigo);
+    }
+
+    .pillar-card.pillar-research .pillar-icon-box {
+      background: rgba(245, 158, 11, 0.12);
+      border-color: rgba(245, 158, 11, 0.3);
+      color: var(--brand-gold);
+    }
+
+    .pillar-body {
+      display: flex;
+      flex-direction: column;
+      gap: 6px;
+    }
+
+    .pillar-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 700;
+      color: var(--text-primary);
+    }
+
+    .pillar-subtitle {
+      font-size: 0.92rem;
+      color: var(--text-secondary);
+      line-height: 1.5;
+    }
+
+    /* 4 FEATURED PROJECTS SHOWCASE */
+    .projects-stack {
+      display: flex;
+      flex-direction: column;
+      gap: 32px;
+    }
+
+    .project-card {
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-xl);
+      padding: 36px;
+      display: grid;
+      grid-template-columns: 1.15fr 0.85fr;
+      gap: 36px;
+      align-items: center;
+      transition: var(--transition-base);
+      box-shadow: var(--shadow-sm);
+      position: relative;
+      overflow: hidden;
+    }
+
+    @media (max-width: 980px) {
+      .project-card {
+        grid-template-columns: 1fr;
+        padding: 26px;
+      }
+    }
+
+    .project-card:hover {
+      box-shadow: var(--shadow-lg);
+      border-color: rgba(56, 189, 248, 0.35);
+      transform: translateY(-2px);
+    }
+
+    .project-card::before {
+      content: '';
+      position: absolute;
+      top: 0;
+      left: 0;
+      width: 5px;
+      height: 100%;
+      background: var(--brand-accent);
+    }
+
+    .project-card.card-esg::before { background: #14b8a6; }
+    .project-card.card-crop::before { background: var(--brand-primary); }
+    .project-card.card-pmfby::before { background: var(--brand-indigo); }
+    .project-card.card-xl::before { background: var(--brand-purple); }
+
+    .project-meta-pill {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      padding: 4px 12px;
+      border-radius: 20px;
+      font-size: 0.75rem;
+      font-weight: 700;
+      text-transform: uppercase;
+      letter-spacing: 0.06em;
+      margin-bottom: 12px;
+    }
+
+    .pill-esg { background: rgba(20, 184, 166, 0.15); color: #14b8a6; border: 1px solid rgba(20, 184, 166, 0.3); }
+    .pill-crop { background: rgba(16, 185, 129, 0.15); color: var(--brand-primary); border: 1px solid rgba(16, 185, 129, 0.3); }
+    .pill-pmfby { background: rgba(59, 130, 246, 0.15); color: #60a5fa; border: 1px solid rgba(59, 130, 246, 0.3); }
+    .pill-xl { background: rgba(168, 85, 247, 0.15); color: #c084fc; border: 1px solid rgba(168, 85, 247, 0.3); }
+
+    .project-name {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.65rem;
+      font-weight: 800;
+      letter-spacing: -0.02em;
+      line-height: 1.25;
+      margin-bottom: 14px;
+      color: var(--text-primary);
+    }
+
+    .project-desc-lines {
+      display: flex;
+      flex-direction: column;
+      gap: 8px;
+      margin-bottom: 20px;
+    }
+
+    .desc-line {
+      display: flex;
+      align-items: flex-start;
+      gap: 10px;
+      font-size: 0.94rem;
+      color: var(--text-secondary);
+      line-height: 1.55;
+    }
+
+    .desc-bullet {
+      color: var(--brand-accent);
+      font-size: 1rem;
+      line-height: 1.4;
+      flex-shrink: 0;
+    }
+
+    .tags-cloud {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 8px;
+      margin-bottom: 24px;
+    }
+
+    .tag-item {
+      padding: 4px 10px;
+      border-radius: 6px;
+      background: rgba(255, 255, 255, 0.04);
+      border: 1px solid var(--surface-border);
+      font-size: 0.78rem;
+      color: var(--text-muted);
+      font-weight: 500;
+    }
+
+    .project-actions {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Right Preview Window */
+    .project-preview-window {
+      background: var(--surface-bg);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-lg);
+      padding: 20px;
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+      position: relative;
+      box-shadow: var(--shadow-md);
+    }
+
+    .preview-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      border-bottom: 1px solid var(--surface-border);
+      padding-bottom: 12px;
+    }
+
+    .preview-dots {
+      display: flex;
+      gap: 6px;
+    }
+
+    .dot {
+      width: 10px;
+      height: 10px;
+      border-radius: 50%;
+    }
+
+    .dot-red { background: #ef4444; }
+    .dot-yellow { background: #f59e0b; }
+    .dot-green { background: #10b981; }
+
+    .preview-url {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      background: rgba(0, 0, 0, 0.2);
+      padding: 3px 10px;
+      border-radius: 4px;
+    }
+
+    .preview-stats-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+    }
+
+    .preview-stat-card {
+      background: rgba(255, 255, 255, 0.02);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-sm);
+      padding: 12px;
+    }
+
+    .p-stat-label {
+      font-size: 0.72rem;
+      color: var(--text-muted);
+      text-transform: uppercase;
+      font-weight: 600;
+    }
+
+    .p-stat-val {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.3rem;
+      font-weight: 700;
+      color: var(--brand-accent);
+      margin-top: 2px;
+    }
+
+    .preview-badge-status {
+      display: flex;
+      align-items: center;
+      gap: 6px;
+      font-size: 0.75rem;
+      color: var(--brand-primary);
+      font-weight: 600;
+      background: rgba(16, 185, 129, 0.1);
+      padding: 6px 12px;
+      border-radius: var(--radius-sm);
+      border: 1px solid rgba(16, 185, 129, 0.25);
+    }
+
+    /* Modal for Quick Preview */
+    .modal-overlay {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100vw;
+      height: 100vh;
+      background: rgba(0, 0, 0, 0.75);
+      backdrop-filter: blur(8px);
+      z-index: 100;
+      display: none;
+      align-items: center;
+      justify-content: center;
+      padding: 24px;
+    }
+
+    .modal-overlay.open {
+      display: flex;
+    }
+
+    .modal-container {
+      background: var(--surface-bg);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-xl);
+      width: 100%;
+      max-width: 1300px;
+      height: 90vh;
+      display: flex;
+      flex-direction: column;
+      overflow: hidden;
+      box-shadow: var(--shadow-lg);
+    }
+
+    .modal-top {
+      padding: 16px 24px;
+      border-bottom: 1px solid var(--surface-border);
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+    }
+
+    .modal-title {
+      font-family: 'Outfit', sans-serif;
+      font-weight: 700;
+      font-size: 1.15rem;
+      display: flex;
+      align-items: center;
+      gap: 10px;
+    }
+
+    .modal-close-btn {
+      background: none;
+      border: none;
+      color: var(--text-secondary);
+      font-size: 1.6rem;
+      cursor: pointer;
+      line-height: 1;
+      padding: 4px;
+    }
+
+    .modal-iframe {
+      flex: 1;
+      width: 100%;
+      height: 100%;
+      border: none;
+      background: #000;
+    }
+
+    /* Publications List */
+    .pubs-list {
+      display: flex;
+      flex-direction: column;
+      gap: 16px;
+    }
+
+    .pub-card {
+      background: var(--surface-card);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-md);
+      padding: 20px 24px;
+      display: flex;
+      justify-content: space-between;
+      align-items: flex-start;
+      gap: 20px;
+      transition: var(--transition-base);
+    }
+
+    .pub-card:hover {
+      border-color: var(--brand-accent);
+      background: var(--surface-hover);
+    }
+
+    .pub-title {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.05rem;
+      font-weight: 700;
+      color: var(--text-primary);
+      margin-bottom: 4px;
+    }
+
+    .pub-meta {
+      font-size: 0.85rem;
+      color: var(--text-secondary);
+    }
+
+    .pub-tag {
+      padding: 4px 10px;
+      border-radius: 4px;
+      background: rgba(255, 255, 255, 0.05);
+      font-size: 0.75rem;
+      color: var(--brand-accent);
+      font-weight: 600;
+      white-space: nowrap;
+    }
+
+    /* Contact Section */
+    .contact-card {
+      background: linear-gradient(135deg, rgba(56, 189, 248, 0.08) 0%, rgba(99, 102, 241, 0.08) 100%);
+      border: 1px solid var(--surface-border);
+      border-radius: var(--radius-xl);
+      padding: 48px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      gap: 32px;
+      flex-wrap: wrap;
+    }
+
+    .contact-info h3 {
+      font-family: 'Outfit', sans-serif;
+      font-size: 1.8rem;
+      font-weight: 800;
+      margin-bottom: 8px;
+    }
+
+    .contact-info p {
+      color: var(--text-secondary);
+      font-size: 1rem;
+      max-width: 600px;
+    }
+
+    .contact-links {
+      display: flex;
+      gap: 12px;
+      flex-wrap: wrap;
+    }
+
+    /* Footer */
+    .footer {
+      border-top: 1px solid var(--surface-border);
+      padding: 36px 0;
+      font-size: 0.88rem;
+      color: var(--text-muted);
+    }
+
+    .footer-inner {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-wrap: wrap;
+      gap: 16px;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- TOP NAVBAR -->
+  <header class="navbar">
+    <div class="container nav-inner">
+      <a href="#top" class="nav-brand">
+        <div class="brand-avatar">MK</div>
+        <div class="brand-meta">
+          <span class="brand-name">Makarand A. Kulkarni, Ph.D.</span>
+          <span class="brand-title">Climate Science &amp; Risk Analytics</span>
+        </div>
+      </a>
+
+      <nav>
+        <ul class="nav-menu">
+          <li><a href="#pillars" class="nav-link">Domain Pillars</a></li>
+          <li><a href="#projects" class="nav-link">Interactive Projects</a></li>
+          <li><a href="#research" class="nav-link">Research &amp; Publications</a></li>
+          <li><a href="#contact" class="nav-link">Contact</a></li>
+        </ul>
+      </nav>
+
+      <div class="nav-actions">
+        <a href="https://github.com/makkulkarni" target="_blank" rel="noopener" class="icon-btn" title="GitHub Profile">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M9 19c-5 1.5-5-2.5-7-3m14 6v-3.87a3.37 3.37 0 0 0-.94-2.61c3.14-.35 6.44-1.54 6.44-7A5.44 5.44 0 0 0 20 4.77 5.07 5.07 0 0 0 19.91 1S18.73.65 16 2.48a13.38 13.38 0 0 0-7 0C6.27.65 5.09 1 5.09 1A5.07 5.07 0 0 0 5 4.77a5.44 5.44 0 0 0-1.5 3.78c0 5.42 3.3 6.61 6.44 7A3.37 3.37 0 0 0 9 18.13V22"></path></svg>
+        </a>
+        <a href="https://linkedin.com/in/makarand-kulkarni-ab47786" target="_blank" rel="noopener" class="icon-btn" title="LinkedIn Profile">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M16 8a6 6 0 0 1 6 6v7h-4v-7a2 2 0 0 0-2-2 2 2 0 0 0-2 2v7h-4v-7a6 6 0 0 1 6-6z"></path><rect x="2" y="9" width="4" height="12"></rect><circle cx="4" cy="4" r="2"></circle></svg>
+        </a>
+        <button class="icon-btn" id="btnThemeToggle" title="Toggle Dark/Light Mode">🌓</button>
+      </div>
+    </div>
+  </header>
+
+  <!-- HERO SECTION -->
+  <section class="hero" id="top">
+    <div class="container">
+      <div class="hero-badge">
+        <span class="hero-badge-pulse"></span>
+        <span>Atmospheric Scientist &amp; Chief Product Officer</span>
+      </div>
+
+      <h1 class="hero-title">Makarand A. Kulkarni, Ph.D.</h1>
+      <div class="hero-tagline">Climate Science | Climate Metrics | Environmental Risk | Data Analytics</div>
+      
+      <p class="hero-bio">
+        Scientist and product leader with <strong>20+ years of experience</strong> translating complex atmospheric physics, satellite remote sensing, and meteorology into production-grade risk architectures. Specializing in parametric insurance design, crop yield volatility under PMFBY, IPCC AR6 enterprise carbon accounting, and non-proportional reinsurance pricing. Author of 15+ peer-reviewed publications.
+      </p>
+
+      <div class="hero-cta-row">
+        <a href="#projects" class="btn-primary">
+          <span>Explore 4 Interactive Projects</span>
+          <span>↓</span>
+        </a>
+        <a href="#contact" class="btn-secondary">
+          <span>Get in Touch</span>
+        </a>
+        <a href="mailto:makarand_kulkarni@hotmail.com" class="btn-secondary">
+          <span>✉ makarand_kulkarni@hotmail.com</span>
+        </a>
+      </div>
+
+      <!-- Stats Ribbon -->
+      <div class="stats-ribbon">
+        <div class="stat-box">
+          <div class="stat-number">20+</div>
+          <div class="stat-label">Years Experience</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">15+</div>
+          <div class="stat-label">Peer-Reviewed Papers</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">4</div>
+          <div class="stat-label">Production Web Applications</div>
+        </div>
+        <div class="stat-box">
+          <div class="stat-number">77+</div>
+          <div class="stat-label">Districts Modeled</div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 DOMAIN PILLARS (Matching User Sketch) -->
+  <section class="section" id="pillars">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-kicker">Core Domains</div>
+        <h2 class="section-title">Specialization Architecture</h2>
+        <p class="section-subtitle">
+          Comprehensive research and quantitative modeling across climate dynamics, carbon abatement, agricultural underwriting, and academic scholarship.
+        </p>
+      </div>
+
+      <div class="pillars-grid">
+        <!-- Pillar 1 -->
+        <a href="#project-crop" class="pillar-card pillar-climate">
+          <div class="pillar-icon-box">🌤️</div>
+          <div class="pillar-body">
+            <h3 class="pillar-title">Climate &amp; Environment</h3>
+            <p class="pillar-subtitle">Climate risk, forecasting, environmental metrics, spatial weather analytics, and high-resolution atmospheric simulations.</p>
+          </div>
+        </a>
+
+        <!-- Pillar 2 -->
+        <a href="#project-dairy" class="pillar-card pillar-esg">
+          <div class="pillar-icon-box">🍃</div>
+          <div class="pillar-body">
+            <h3 class="pillar-title">ESG &amp; Carbon</h3>
+            <p class="pillar-subtitle">Dairy ESG, carbon accounting, Scope 1-3 footprinting, IPCC AR6 stress testing, and marginal abatement pathways.</p>
+          </div>
+        </a>
+
+        <!-- Pillar 3 -->
+        <a href="#project-pmfby" class="pillar-card pillar-risk">
+          <div class="pillar-icon-box">📈</div>
+          <div class="pillar-body">
+            <h3 class="pillar-title">Risk Analytics</h3>
+            <p class="pillar-subtitle">PMFBY agricultural underwriting, parametric index design, tender cluster optimization, and reinsurance treaty pricing.</p>
+          </div>
+        </a>
+
+        <!-- Pillar 4 -->
+        <a href="#research" class="pillar-card pillar-research">
+          <div class="pillar-icon-box">📖</div>
+          <div class="pillar-body">
+            <h3 class="pillar-title">Research &amp; Teaching</h3>
+            <p class="pillar-subtitle">Publications in atmospheric sciences, monsoon meteorology, university lecturing, and doctoral research guidance.</p>
+          </div>
+        </a>
+      </div>
+    </div>
+  </section>
+
+  <!-- 4 FEATURED INDEPENDENT PROJECTS -->
+  <section class="section" id="projects" style="background: rgba(0,0,0,0.15);">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-kicker">Portfolio Demonstrations</div>
+        <h2 class="section-title">Featured Interactive Web Applications</h2>
+        <p class="section-subtitle">
+          Four standalone, zero-dependency analytical applications built for executives, actuaries, and underwriters. Each application executes pure client-side mathematical engines in any browser.
+        </p>
+      </div>
+
+      <div class="projects-stack">
+
+        <!-- ============================================== -->
+        <!-- PROJECT 1: DAIRY ESG                           -->
+        <!-- ============================================== -->
+        <article class="project-card card-esg" id="project-dairy">
+          <div class="project-info">
+            <span class="project-meta-pill pill-esg">🍃 ESG &amp; Decarbonization</span>
+            <h3 class="project-name">Enterprise Dairy Decarbonization &amp; Climate Stress-Testing</h3>
+            
+            <div class="project-desc-lines">
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>Scope 1, 2 &amp; Farm-Level Scope 3 Accounting:</strong> Establishes complete baseline greenhouse gas inventories across processing plants, milk chilling, transit ton-km, and upstream livestock enteric methane using IPCC AR6 GWP factors.</span>
+              </div>
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>Climate Stress Testing:</strong> Models IPCC temperature anomalies and summer THI heat stress across crossbred, buffalo, and indigenous herds to project localized milk yield losses.</span>
+              </div>
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>2030 Decarbonization Pathways:</strong> Simulates four actionable mitigation levers (ration balancing, solar BMCs, manure biodigesters, and genetics) to meet corporate science-based reduction targets.</span>
+              </div>
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>Executive Decision Support:</strong> Produces Marginal Abatement Cost (MAC) curves, marginal carbon intensity curves, and automated board-ready presentation slide exports.</span>
+              </div>
+            </div>
+
+            <div class="tags-cloud">
+              <span class="tag-item">IPCC AR6 GWP</span>
+              <span class="tag-item">Scope 3 Ag Emissions</span>
+              <span class="tag-item">THI Heat Stress</span>
+              <span class="tag-item">Marginal Abatement Cost</span>
+              <span class="tag-item">Plotly.js</span>
+            </div>
+
+            <div class="project-actions">
+              <a href="projects/dairy-esg/index.html" target="_blank" class="btn-primary">
+                <span>🚀 Launch Interactive Dashboard</span>
+              </a>
+              <button class="btn-secondary" onclick="openPreviewModal('projects/dairy-esg/index.html', 'Enterprise Dairy Decarbonization Dashboard')">
+                <span>👁️ Quick In-Page Preview</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="project-preview-window">
+            <div class="preview-header">
+              <div class="preview-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+              </div>
+              <span class="preview-url">dairy-esg/index.html</span>
+            </div>
+            <div class="preview-stats-grid">
+              <div class="preview-stat-card">
+                <div class="p-stat-label">Daily Volume</div>
+                <div class="p-stat-val">20.0M L/day</div>
+              </div>
+              <div class="preview-stat-card">
+                <div class="p-stat-label">2030 Target</div>
+                <div class="p-stat-val">-30.0% CO₂e</div>
+              </div>
+              <div class="preview-stat-card">
+                <div class="p-stat-label">Baseline Intensity</div>
+                <div class="p-stat-val">2.10 kg/kg</div>
+              </div>
+              <div class="preview-stat-card">
+                <div class="p-stat-label">Methodology</div>
+                <div class="p-stat-val">IPCC AR6</div>
+              </div>
+            </div>
+            <div class="preview-badge-status">
+              <span>● Production Standalone HTML5 Application</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- ============================================== -->
+        <!-- PROJECT 2: CROP RISK ANALYZER                  -->
+        <!-- ============================================== -->
+        <article class="project-card card-crop" id="project-crop">
+          <div class="project-info">
+            <span class="project-meta-pill pill-crop">🌤️ Actuarial &amp; Climate Volatility</span>
+            <h3 class="project-name">PMFBY Crop Insurance Portfolio &amp; Tail Risk Analyzer</h3>
+            
+            <div class="project-desc-lines">
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>Stochastic Yield Shock Modeling:</strong> Generates 1,000+ Monte Carlo simulated yield trajectories per Insurance Unit (IU) based on historical empirical distributions and actuarial minimum variance buffers.</span>
+              </div>
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>Contractual Indemnity Mechanics:</strong> Applies contractual Threshold Yields, indemnity factors, and statutory indemnity caps to evaluate shortfalls for major foodgrain and oilseed crops.</span>
+              </div>
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>Hierarchical Portfolio Pooling:</strong> Sums currency liabilities simultaneously from IU $	o$ District $	o$ Cluster, capturing the geographical diversification effect where low losses offset high claims.</span>
+              </div>
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>Tail Risk &amp; Bidding Optimization:</strong> Calculates Expected Burn Rates, inter-annual volatility (SD), 1-in-10 ($P_{90}$) and 1-in-20 ($P_{95}$) Value at Risk scenarios, and optimal cluster pairings.</span>
+              </div>
+            </div>
+
+            <div class="tags-cloud">
+              <span class="tag-item">Monte Carlo Simulation</span>
+              <span class="tag-item">PMFBY Yield Shortfalls</span>
+              <span class="tag-item">Hierarchical Pooling</span>
+              <span class="tag-item">Value at Risk (P95 VaR)</span>
+              <span class="tag-item">Coefficient of Variation</span>
+            </div>
+
+            <div class="project-actions">
+              <a href="projects/crop-risk-analyzer/index.html" target="_blank" class="btn-primary">
+                <span>🚀 Launch Interactive Dashboard</span>
+              </a>
+              <button class="btn-secondary" onclick="openPreviewModal('projects/crop-risk-analyzer/index.html', 'Crop Insurance Risk Analyzer')">
+                <span>👁️ Quick In-Page Preview</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="project-preview-window">
+            <div class="preview-header">
+              <div class="preview-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+              </div>
+              <span class="preview-url">crop-risk-analyzer/index.html</span>
+            </div>
+            <div class="preview-stats-grid">
+              <div class="preview-stat-card">
+                <div class="p-stat-label">Portfolio SI</div>
+                <div class="p-stat-val">₹ 1,343.7 Cr</div>
+              </div>
+              <div class="preview-stat-card">
+                <div class="p-stat-label">Simulations</div>
+                <div class="p-stat-val">1,000 Draws</div>
+              </div>
+              <div class="preview-stat-card">
+                <div class="p-stat-label">Tail Risk (P95)</div>
+                <div class="p-stat-val">₹ 20.4 Cr</div>
+              </div>
+              <div class="preview-stat-card">
+                <div class="p-stat-label">Indemnity Levels</div>
+                <div class="p-stat-val">70% – 90%</div>
+              </div>
+            </div>
+            <div class="preview-badge-status">
+              <span>● Vectorized In-Browser Simulation Engine</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- ============================================== -->
+        <!-- PROJECT 3: PMFBY UNDERWRITING ANALYZER         -->
+        <!-- ============================================== -->
+        <article class="project-card card-pmfby" id="project-pmfby">
+          <div class="project-info">
+            <span class="project-meta-pill pill-pmfby">📈 Underwriting Intelligence</span>
+            <h3 class="project-name">PMFBY Underwriting Analytics Platform &amp; Cluster Builder</h3>
+            
+            <div class="project-desc-lines">
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>Multi-Year Scheme Data Integration:</strong> Consolidates 1,870+ records across 77 notified districts in Maharashtra and Chhattisgarh over Kharif and Rabi seasons (2018–2025).</span>
+              </div>
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>Granular Underwriting Footprint:</strong> Computes gross premium pools (farmer share, state subsidy, and central subsidy), cumulative claims paid, and statutory loss ratios (burn rates).</span>
+              </div>
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>Dynamic District Cluster Builder:</strong> Enables underwriters to interactively synthesize custom district clusters and simulate combined tender premiums, claims, and loss ratios in real time.</span>
+              </div>
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>Tender Strategy &amp; Risk Profiling:</strong> Ranks high-risk vs profitable districts and evaluates 80:110 cup &amp; cap risk-sharing corridors to inform underwriting participation.</span>
+              </div>
+            </div>
+
+            <div class="tags-cloud">
+              <span class="tag-item">PMFBY &amp; WBCIS</span>
+              <span class="tag-item">Loss Ratio / Burn Rate</span>
+              <span class="tag-item">Dynamic Cluster Builder</span>
+              <span class="tag-item">Subsidy Sharing Splits</span>
+              <span class="tag-item">77 Master Districts</span>
+            </div>
+
+            <div class="project-actions">
+              <a href="projects/pmfby-analyzer/index.html" target="_blank" class="btn-primary">
+                <span>🚀 Launch Interactive Dashboard</span>
+              </a>
+              <button class="btn-secondary" onclick="openPreviewModal('projects/pmfby-analyzer/index.html', 'PMFBY Underwriting Platform')">
+                <span>👁️ Quick In-Page Preview</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="project-preview-window">
+            <div class="preview-header">
+              <div class="preview-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+              </div>
+              <span class="preview-url">pmfby-analyzer/index.html</span>
+            </div>
+            <div class="preview-stats-grid">
+              <div class="preview-stat-card">
+                <div class="p-stat-label">Gross Premium</div>
+                <div class="p-stat-val">₹ 40,434 Cr</div>
+              </div>
+              <div class="preview-stat-card">
+                <div class="p-stat-label">Burn Rate (MH)</div>
+                <div class="p-stat-val">75.61%</div>
+              </div>
+              <div class="preview-stat-card">
+                <div class="p-stat-label">Coverage Years</div>
+                <div class="p-stat-val">2018 – 2025</div>
+              </div>
+              <div class="preview-stat-card">
+                <div class="p-stat-label">Tender Synthesizer</div>
+                <div class="p-stat-val">Real-Time</div>
+              </div>
+            </div>
+            <div class="preview-badge-status">
+              <span>● Zero-Server Client-Side Analytical Engine</span>
+            </div>
+          </div>
+        </article>
+
+        <!-- ============================================== -->
+        <!-- PROJECT 4: XL REINSURANCE PRICING              -->
+        <!-- ============================================== -->
+        <article class="project-card card-xl" id="project-xl">
+          <div class="project-info">
+            <span class="project-meta-pill pill-xl">⚡ Reinsurance Capital &amp; Pricing</span>
+            <h3 class="project-name">Non-Proportional XL Reinsurance Pricing &amp; Risk Simulator</h3>
+            
+            <div class="project-desc-lines">
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>Excess of Loss (XL) Treaty Modeling:</strong> Actuarial pricing platform that structures non-proportional layers ($C 	ext{ xs } D$) against annual aggregate loss trajectories.</span>
+              </div>
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>Multi-Distribution Fitting:</strong> Executes 10,000+ stochastic draws across Normal, heavy-tailed Lognormal, and skewed Gamma distributions fitted via method of moments.</span>
+              </div>
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>Continuous Band Scaling:</strong> Auto-constructs continuous coverage bands from zero to upper treaty boundaries, scaling layer deductibles and limits via target loss ratios ($LR\%$).</span>
+              </div>
+              <div class="desc-line">
+                <span class="desc-bullet">▸</span>
+                <span><strong>Rate on Line (ROL %) &amp; Exceedance:</strong> Derives pure burning cost plus standard deviation volatility loadings ($ar{Y} + \lambda \cdot \sigma$), ROL %, relative layer shares, and Exceedance Probability (EP) curves.</span>
+              </div>
+            </div>
+
+            <div class="tags-cloud">
+              <span class="tag-item">Excess of Loss (XL)</span>
+              <span class="tag-item">Rate on Line (ROL %)</span>
+              <span class="tag-item">Burning Cost with Loading</span>
+              <span class="tag-item">EP Exceedance Curves</span>
+              <span class="tag-item">Reinsurance Towers</span>
+            </div>
+
+            <div class="project-actions">
+              <a href="projects/xl-reinsurance/index.html" target="_blank" class="btn-primary">
+                <span>🚀 Launch Interactive Dashboard</span>
+              </a>
+              <button class="btn-secondary" onclick="openPreviewModal('projects/xl-reinsurance/index.html', 'XL Reinsurance Pricing Simulator')">
+                <span>👁️ Quick In-Page Preview</span>
+              </button>
+            </div>
+          </div>
+
+          <div class="project-preview-window">
+            <div class="preview-header">
+              <div class="preview-dots">
+                <span class="dot dot-red"></span>
+                <span class="dot dot-yellow"></span>
+                <span class="dot dot-green"></span>
+              </div>
+              <span class="preview-url">xl-reinsurance/index.html</span>
+            </div>
+            <div class="preview-stats-grid">
+              <div class="preview-stat-card">
+                <div class="p-stat-label">Loss Ratio (LR)</div>
+                <div class="p-stat-val">85.0%</div>
+              </div>
+              <div class="preview-stat-card">
+                <div class="p-stat-label">Layer 150-175 ROL</div>
+                <div class="p-stat-val">3.87%</div>
+              </div>
+              <div class="preview-stat-card">
+                <div class="p-stat-label">Layer 175-200 ROL</div>
+                <div class="p-stat-val">1.29%</div>
+              </div>
+              <div class="preview-stat-card">
+                <div class="p-stat-label">Stochastic Draws</div>
+                <div class="p-stat-val">10,000 Draws</div>
+              </div>
+            </div>
+            <div class="preview-badge-status">
+              <span>● Complete Actuarial Burning Cost Architecture</span>
+            </div>
+          </div>
+        </article>
+
+      </div>
+    </div>
+  </section>
+
+  <!-- RESEARCH & PUBLICATIONS SECTION -->
+  <section class="section" id="research">
+    <div class="container">
+      <div class="section-header">
+        <div class="section-kicker">Academic Contributions</div>
+        <h2 class="section-title">Selected Research &amp; Publications</h2>
+        <p class="section-subtitle">
+          Over 15 peer-reviewed papers spanning monsoon meteorology, atmospheric dynamics, climate change impact on Indian agriculture, and numerical weather prediction.
+        </p>
+      </div>
+
+      <div class="pubs-list">
+        <div class="pub-card">
+          <div>
+            <h4 class="pub-title">Impact of Climate Variability and Extreme Weather on Agricultural Productivity in Semi-Arid Tropics</h4>
+            <div class="pub-meta">M. A. Kulkarni et al. | Journal of Applied Meteorology and Climatology</div>
+          </div>
+          <span class="pub-tag">Atmospheric Sciences</span>
+        </div>
+
+        <div class="pub-card">
+          <div>
+            <h4 class="pub-title">Parametric Weather Index Insurance: Actuarial Basis Risk Reduction via Mesoscale High-Resolution Modeling</h4>
+            <div class="pub-meta">M. A. Kulkarni | International Journal of Disaster Risk Reduction</div>
+          </div>
+          <span class="pub-tag">Parametric Risk</span>
+        </div>
+
+        <div class="pub-card">
+          <div>
+            <h4 class="pub-title">Spatio-Temporal Dynamics of Indian Summer Monsoon Rainfall Extremes and Agricultural Vulnerability</h4>
+            <div class="pub-meta">M. A. Kulkarni et al. | Theoretical and Applied Climatology</div>
+          </div>
+          <span class="pub-tag">Monsoon Dynamics</span>
+        </div>
+
+        <div class="pub-card">
+          <div>
+            <h4 class="pub-title">Evaluation of Numerical Weather Prediction (WRF) Models for Micro-Level Agro-Meteorological Advisories</h4>
+            <div class="pub-meta">M. A. Kulkarni | Meteorological Applications</div>
+          </div>
+          <span class="pub-tag">NWP Modeling</span>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- CONTACT SECTION -->
+  <section class="section" id="contact">
+    <div class="container">
+      <div class="contact-card">
+        <div class="contact-info">
+          <h3>Let's Collaborate</h3>
+          <p>
+            Interested in consulting, actuarial climate modeling, parametric product development, or executive research collaborations? Connect directly via email or LinkedIn.
+          </p>
+        </div>
+
+        <div class="contact-links">
+          <a href="mailto:makarand_kulkarni@hotmail.com" class="btn-primary">
+            <span>✉ Email Dr. Kulkarni</span>
+          </a>
+          <a href="https://linkedin.com/in/makarand-kulkarni-ab47786" target="_blank" rel="noopener" class="btn-secondary">
+            <span>LinkedIn Profile</span>
+          </a>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- FOOTER -->
+  <footer class="footer">
+    <div class="container footer-inner">
+      <div>© 2026 Makarand A. Kulkarni, Ph.D. — All rights reserved.</div>
+      <div>Pune, Maharashtra, India | Climate Science, Environmental Risk &amp; Actuarial Analytics</div>
+    </div>
+  </footer>
+
+  <!-- MODAL FOR IN-PAGE DASHBOARD PREVIEW -->
+  <div class="modal-overlay" id="previewModal">
+    <div class="modal-container">
+      <div class="modal-top">
+        <div class="modal-title" id="modalTitle">
+          <span>🚀 Live Application Preview</span>
+        </div>
+        <div style="display:flex; align-items:center; gap:14px;">
+          <a href="#" id="modalOpenExternal" target="_blank" class="btn-secondary" style="padding:6px 14px; font-size:0.8rem;">Open in Full Window ↗</a>
+          <button class="modal-close-btn" onclick="closePreviewModal()">&times;</button>
+        </div>
+      </div>
+      <iframe src="" class="modal-iframe" id="modalIframe"></iframe>
+    </div>
+  </div>
+
+  <script>
+    // Theme Toggle
+    const btnTheme = document.getElementById('btnThemeToggle');
+    btnTheme.addEventListener('click', () => {
+      const curr = document.documentElement.getAttribute('data-theme');
+      const next = curr === 'light' ? 'dark' : 'light';
+      document.documentElement.setAttribute('data-theme', next);
+    });
+
+    // Preview Modal Handlers
+    const modal = document.getElementById('previewModal');
+    const modalIframe = document.getElementById('modalIframe');
+    const modalTitle = document.getElementById('modalTitle');
+    const modalOpenExternal = document.getElementById('modalOpenExternal');
+
+    function openPreviewModal(url, title) {
+      modalIframe.src = url;
+      modalTitle.innerHTML = `<span>🚀 ${title}</span>`;
+      modalOpenExternal.href = url;
+      modal.classList.add('open');
+      document.body.style.overflow = 'hidden';
+    }
+
+    function closePreviewModal() {
+      modal.classList.remove('open');
+      modalIframe.src = '';
+      document.body.style.overflow = 'auto';
+    }
+
+    modal.addEventListener('click', (e) => {
+      if (e.target === modal) closePreviewModal();
+    });
+  </script>
+</body>
+</html>
