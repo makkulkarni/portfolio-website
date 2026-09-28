@@ -11,10 +11,23 @@
   <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
   <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&family=Outfit:wght@500;600;700;800&family=Fira+Code:wght@400;500&display=swap" rel="stylesheet">
   
-  <!-- KaTeX for mathematical notation -->
+    <!-- KaTeX for mathematical notation -->
   <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
   <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], throwOnError: false});"></script>
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      if (window.renderMathInElement) {
+        renderMathInElement(document.body, {
+          delimiters: [
+            {left: '$$', right: '$$', display: true},
+            {left: '$', right: '$', display: false}
+          ],
+          throwOnError: false
+        });
+      }
+    });
+  </script>
 
   <style>
     /* ========================================================== */
@@ -670,11 +683,9 @@
           <p class="project-summary">Crop insurance, yield estimation and pest/disease risk tools.</p>
           
           <div class="project-details">
-            <div><strong>Stochastic Yield Shock Engine:</strong> 1,000+ Monte Carlo draws simulating shortfall payout distributions: $Y = \max(0, \mu + Z \cdot \sigma)$.</div>
-            <div><strong>Contractual PMFBY Payouts:</strong> Computes shortfall payout ratio: $\min\left(1, \max\left(0, \frac{TY 	imes (1 - 	ext{indemnity}) - Y}{TY}
-\right)
-\right)$.</div>
-            <div><strong>Hierarchical Portfolio Pooling:</strong> Sums liabilities simultaneously across $	ext{IU} 	o 	ext{District} 	o 	ext{Cluster}$.</div>
+            <div><strong>Stochastic Yield Shock Engine:</strong> 1,000+ Monte Carlo draws simulating shortfall payout distributions: $Y = \max\left(0, \; \mu + Z \cdot \sigma\right)$.</div>
+            <div><strong>Contractual PMFBY Payouts:</strong> Computes shortfall payout ratio: $\min\left(1, \; \max\left(0, \; \frac{\text{TY} \times (1 - \text{indemnity}) - Y}{\text{TY}}\right)\right)$.</div>
+            <div><strong>Hierarchical Portfolio Pooling:</strong> Sums liabilities simultaneously across $\text{IU} \to \text{District} \to \text{Cluster}$.</div>
             <div><strong>Actuarial Tail Risk (VaR):</strong> Computes Expected Burn Rates, inter-annual volatility ($\sigma$), and $P_{90}$ / $P_{95}$ Value at Risk.</div>
           </div>
 
@@ -696,8 +707,8 @@
           
           <div class="project-details">
             <div><strong>PMFBY Master Dataset:</strong> Synthesizes 1,870+ scheme records across 77 districts with dynamic cluster builders.</div>
-            <div><strong>Excess of Loss (XL) Layers:</strong> Structures non-proportional treaties ($C 	ext{ xs } D$) against aggregate loss draws: $Y = \min(\max(X - D, 0), C)$.</div>
-            <div><strong>Burning Cost &amp; Volatility Loadings:</strong> Prices layers with standard deviation loading: $	ext{Layer Rate} = \mathbb{E}[Y] + \lambda 	imes \sigma(Y)$.</div>
+            <div><strong>Excess of Loss (XL) Layers:</strong> Structures non-proportional treaties ($C \text{ xs } D$) against aggregate loss draws: $Y = \min(\max(X - D, 0), C)$.</div>
+            <div><strong>Burning Cost &amp; Volatility Loadings:</strong> Prices layers with standard deviation loading: $\text{Layer Rate} = \mathbb{E}[Y] + \lambda \times \sigma(Y)$.</div>
             <div><strong>Rate on Line (ROL %):</strong> Continuous band scaling, attachment probabilities, and Exceedance Probability (EP) curves.</div>
           </div>
 
@@ -724,7 +735,7 @@
             <div><strong>Scope 1, 2 &amp; Upstream Scope 3:</strong> Quantifies dairy farm emissions across enteric methane and feed using IPCC AR6 GWP.</div>
             <div><strong>Climate Stress Testing:</strong> Evaluates herd performance under escalating THI heat stress and projected milk yield losses.</div>
             <div><strong>2030 Mitigation Pathways:</strong> Models 4 intervention levers (ration balancing, solar BMCs, manure digesters, genetics).</div>
-            <div><strong>Marginal Abatement Cost (MAC):</strong> Generates executive MAC curves and net cost per metric ton of $	ext{CO}_2	ext{e}$ mitigated.</div>
+            <div><strong>Marginal Abatement Cost (MAC):</strong> Generates executive MAC curves and net cost per metric ton of $\text{CO}_2\text{e}$ mitigated.</div>
           </div>
 
           <div class="project-links">

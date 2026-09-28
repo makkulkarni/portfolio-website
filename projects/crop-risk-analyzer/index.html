@@ -1221,24 +1221,21 @@
         <div class="method-block">
           <h4>1. Yield Shortfall Payout Equation</h4>
           <p>
-            For each Insurance Unit (IU) $i$ and simulated season $s$, the yield payout ratio is computed against the contractual Threshold Yield $TY_i$ and indemnity factor $(1 - \text{indemnity})$:
+            For each Insurance Unit (IU) $i$ and simulated season $s$, the yield payout ratio is computed against the contractual Threshold Yield $\text{TY}_i$ and indemnity factor $(1 - \text{indemnity})$:
             <br>
-            $$\text{Payout Ratio}_{i,s} = \min\left(1, \max\left(0, \frac{TY_i \times (1 - \text{indemnity}) - Y_{i,s}}{TY_i}
-\right)
-\r\right)$$
+            $$\text{Payout Ratio}_{i,s} = \min\left(1, \; \max\left(0, \; \frac{\text{TY}_i \times (1 - \text{indemnity}) - Y_{i,s}}{\text{TY}_i}\right)\right)$$
             Currency liabilities are bounded by the contractual liability cap:
             <br>
-            $$\text{Payout}_{i,s} = \min\left(\text{Payout Ratio}_{i,s} \times \text{SI}_i \times \text{Area}_i, \text{Cap}_i \times \text{SI}_i \times \text{Area}_i
-\r\right)$$
+            $$\text{Payout}_{i,s} = \min\left(\text{Payout Ratio}_{i,s} \times \text{SI}_i \times \text{Area}_i, \; \text{Cap}_i \times \text{SI}_i \times \text{Area}_i\right)$$
           </p>
         </div>
 
         <div class="method-block">
           <h4>2. Normal Shock Monte Carlo Sampling</h4>
           <p>
-            Historical yields per Insurance Unit provide empirical $\mu_i$ (mean yield) and $\sigma_i$ (standard deviation). Zero-variance records receive an actuarial minimum variance buffer of $10\% \times \mu_i$. Yields are simulated via independent normal random shocks:
+            Historical yields per Insurance Unit provide empirical $\mu_i$ (mean yield) and $\sigma_i$ (standard deviation). Zero-variance records receive an actuarial minimum variance buffer of $10\% \cdot \mu_i$. Yields are simulated via independent normal random shocks:
             <br>
-            $$Y_{i,s} = \max(0, \mu_i + Z_s \cdot \sigma_i), \quad Z_s \sim \mathcal{N}(0, 1)$$
+            $$Y_{i,s} = \max\left(0, \; \mu_i + Z_s \cdot \sigma_i\right), \quad Z_s \sim \mathcal{N}(0, 1)$$
           </p>
         </div>
 
@@ -1255,7 +1252,7 @@
         <div class="method-block">
           <h4>4. Value at Risk (VaR) &amp; Tail Metrics</h4>
           <p>
-            Percentile payouts ($P_{90}$ and $P_{95}$) represent the 1-in-10 and 1-in-20 year worst-case losses. Coefficient of Variation ($CV = \frac{\sigma}{\mu}$) quantifies relative pricing risk.
+            Percentile payouts ($P_{90}$ and $P_{95}$) represent the 1-in-10 and 1-in-20 year worst-case losses. Coefficient of Variation ($\text{CV} = \frac{\sigma}{\mu}$) quantifies relative pricing risk.
           </p>
         </div>
       </section>
