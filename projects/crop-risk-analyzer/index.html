@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-<html lang="en" data-theme="dark">
+<html lang="en" data-theme="light">
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
@@ -831,6 +831,12 @@
       opacity: 1;
     }
   </style>
+
+  <!-- KaTeX for pristine mathematical typesetting -->
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.css">
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/katex.min.js"></script>
+  <script defer src="https://cdn.jsdelivr.net/npm/katex@0.16.9/dist/contrib/auto-render.min.js" onload="renderMathInElement(document.body, {delimiters: [{left: '$$', right: '$$', display: true}, {left: '$', right: '$', display: false}], throwOnError: false});"></script>
+
 </head>
 <body>
 
@@ -1215,22 +1221,22 @@
         <div class="method-block">
           <h4>1. Yield Shortfall Payout Equation</h4>
           <p>
-            For each Insurance Unit (IU) $i$ and simulated season $s$, the yield payout ratio is computed against the contractual Threshold Yield $TY_i$ and indemnity factor $(1 - 	ext{indemnity})$:
+            For each Insurance Unit (IU) $i$ and simulated season $s$, the yield payout ratio is computed against the contractual Threshold Yield $TY_i$ and indemnity factor $(1 - \text{indemnity})$:
             <br>
-            $$	ext{Payout Ratio}_{i,s} = \min\left(1, \max\left(0, rac{TY_i 	imes (1 - 	ext{indemnity}) - Y_{i,s}}{TY_i}
-ight)
-ight)$$
+            $$\text{Payout Ratio}_{i,s} = \min\left(1, \max\left(0, \frac{TY_i \times (1 - \text{indemnity}) - Y_{i,s}}{TY_i}
+\right)
+\r\right)$$
             Currency liabilities are bounded by the contractual liability cap:
             <br>
-            $$	ext{Payout}_{i,s} = \min\left(	ext{Payout Ratio}_{i,s} 	imes 	ext{SI}_i 	imes 	ext{Area}_i, 	ext{Cap}_i 	imes 	ext{SI}_i 	imes 	ext{Area}_i
-ight)$$
+            $$\text{Payout}_{i,s} = \min\left(\text{Payout Ratio}_{i,s} \times \text{SI}_i \times \text{Area}_i, \text{Cap}_i \times \text{SI}_i \times \text{Area}_i
+\r\right)$$
           </p>
         </div>
 
         <div class="method-block">
           <h4>2. Normal Shock Monte Carlo Sampling</h4>
           <p>
-            Historical yields per Insurance Unit provide empirical $\mu_i$ (mean yield) and $\sigma_i$ (standard deviation). Zero-variance records receive an actuarial minimum variance buffer of $10\% 	imes \mu_i$. Yields are simulated via independent normal random shocks:
+            Historical yields per Insurance Unit provide empirical $\mu_i$ (mean yield) and $\sigma_i$ (standard deviation). Zero-variance records receive an actuarial minimum variance buffer of $10\% \times \mu_i$. Yields are simulated via independent normal random shocks:
             <br>
             $$Y_{i,s} = \max(0, \mu_i + Z_s \cdot \sigma_i), \quad Z_s \sim \mathcal{N}(0, 1)$$
           </p>
@@ -1241,7 +1247,7 @@ ight)$$
           <p>
             Rather than averaging individual burn rates, total payout currency is summed simultaneously across all IUs for each simulation scenario $s$:
             <br>
-            $$	ext{Burn Rate}_{C,s} = rac{\sum_{i \in C} 	ext{Payout}_{i,s}}{\sum_{i \in C} 	ext{Total SI}_i}$$
+            $$\text{Burn Rate}_{C,s} = \frac{\sum_{i \in C} \text{Payout}_{i,s}}{\sum_{i \in C} \text{Total SI}_i}$$
             Because high yields in some IUs offset shortfalls in others, the portfolio standard deviation $\sigma_C$ is strictly lower than the sum of individual components—demonstrating the <strong>Portfolio Pooling Effect</strong>.
           </p>
         </div>
@@ -1249,7 +1255,7 @@ ight)$$
         <div class="method-block">
           <h4>4. Value at Risk (VaR) &amp; Tail Metrics</h4>
           <p>
-            Percentile payouts ($P_{90}$ and $P_{95}$) represent the 1-in-10 and 1-in-20 year worst-case losses. Coefficient of Variation ($CV = rac{\sigma}{\mu}$) quantifies relative pricing risk.
+            Percentile payouts ($P_{90}$ and $P_{95}$) represent the 1-in-10 and 1-in-20 year worst-case losses. Coefficient of Variation ($CV = \frac{\sigma}{\mu}$) quantifies relative pricing risk.
           </p>
         </div>
       </section>
@@ -1289,7 +1295,7 @@ const AppState = {
     clusterSummary: [],
     simMatrix: null
   },
-  theme: 'dark'
+  theme: 'light'
 };
 
 /**
